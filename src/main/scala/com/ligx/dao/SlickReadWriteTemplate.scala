@@ -7,10 +7,10 @@ import slick.backend.DatabaseConfig
   * Author: ligongxing.
   * Date: 2017年03月16日.
   */
-object SlickReadWriteTemplate {
+object SlickReadWriteTemplate extends App {
   private val config = ConfigFactory.load()
   val dbConfig = config.getConfig("db")
-
+  println(dbConfig.getString("url"))
 }
 
 class SlickReadWriteTemplate {
