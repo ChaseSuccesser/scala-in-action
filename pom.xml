@@ -95,7 +95,13 @@
         <dependency>
             <groupId>com.typesafe.slick</groupId>
             <artifactId>slick_2.11</artifactId>
-            <version>3.1.1</version>
+            <version>3.2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>6.0.5</version>
         </dependency>
 
         <!--unit test-->
@@ -103,12 +109,6 @@
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest_2.11</artifactId>
             <version>3.0.0-M15</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>5.2.4.Final</version>
         </dependency>
 
         <!--thrift-->
