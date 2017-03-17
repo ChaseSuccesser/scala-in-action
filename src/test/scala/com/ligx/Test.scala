@@ -28,10 +28,4 @@ class Test extends FlatSpec with Matchers{
       enptyStack.pop()
     }
   }
-
-  "An map result" should "convert json String" in {
-    val map = Map[String, Any]()
-    val new_map = map + ("is_success" -> true, "count" -> 2)
-    println(new_map.toJson.prettyPrint)
-  }
 }
