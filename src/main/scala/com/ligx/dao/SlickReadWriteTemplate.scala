@@ -12,5 +12,6 @@ object SlickReadWriteTemplate {
 }
 
 class SlickReadWriteTemplate {
-//  val db = Database.forURI(dbConfig.getString("url"), dbConfig.getString("username"), dbConfig.getString("password"), dbConfig.getString("driver"))
+//  val db = Database.forURI(dbConfig.getString("url"), dbConfig.getString("username"),
+  // dbConfig.getString("password"), dbConfig.getString("driver"))
 }
