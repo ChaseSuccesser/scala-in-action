@@ -1,19 +1,16 @@
 package com.ligx.dao
 
-import com.typesafe.config.ConfigFactory
+import slick.jdbc.DB2Profile.api._
 
 /**
   * Author: ligongxing.
   * Date: 2017年03月16日.
   */
-object SlickReadWriteTemplate {
-  private val config = ConfigFactory.load()
-  val dbConfig = config.getConfig("db")
-}
-
 class SlickReadWriteTemplate {
 
-//  val db = Database.forURI(dbConfig.getString("url"), dbConfig.getString("username"),
-  // dbConfig.getString("password"), dbConfig.getString("driver"))
+  this: Db =>
 
+  def insert(sql: String): DBIO[Int] = {
+    sqlu"sql"
+  }
 }
