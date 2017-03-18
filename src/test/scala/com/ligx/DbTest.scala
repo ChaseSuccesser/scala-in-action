@@ -1,9 +1,13 @@
 package com.ligx
 
 import java.util.Date
+import java.util.concurrent.TimeUnit
 
-import com.ligx.dao.{Db, SlickReadWriteTemplate}
+import com.ligx.dao.SlickReadWriteTemplate
 import org.scalatest.{FlatSpec, Matchers}
+
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 /**
   * Author: ligongxing.
@@ -22,9 +26,13 @@ class DbTest extends FlatSpec with Matchers {
    */
 
   "insert" should "success" in {
-    val template = new SlickReadWriteTemplate with Db
+    val template = new SlickReadWriteTemplate
 
     val time = new Date().getTime
-    template.insert(s"insert into slick_test values('ligx', $time, 24)")
+
+    val future = template.insert(s"insert into slick_test(name, time, age) values('ligx', $time, 24)")
+
+    val result = Await.result(future, Duration(3, TimeUnit.SECONDS))
+    println(s"result: $result")
   }
 }
