@@ -35,4 +35,10 @@ class DbTest extends FlatSpec with Matchers {
     val result = Await.result(future, Duration(3, TimeUnit.SECONDS))
     println(s"result: $result")
   }
+
+  "select" should "success" in {
+    val template = new SlickReadWriteTemplate
+
+    val selectSql = ""
+  }
 }
