@@ -14,4 +14,11 @@ class SlickReadWriteTemplate extends Db {
     val insertAction: DBIO[Int] = sqlu"#$sql"
     db.run(insertAction)
   }
+
+  def select(): Future[Seq[_]] = {
+    val selectAction = sql"SELECT * FROM slick_test".as[(Int, String, Long, Int)]
+    db.run(selectAction)
+  }
+
+
 }
