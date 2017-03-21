@@ -18,7 +18,7 @@ trait Db {
   import Db._
 
   val db = Database.forURL(
-    url=dbConfig.getString("url"),
+    url = dbConfig.getString("url"),
     user = dbConfig.getString("username"),
     password = dbConfig.getString("password"),
     driver = dbConfig.getString("driver"),
