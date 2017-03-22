@@ -1,6 +1,7 @@
 package com.ligx.dao
 
 import slick.jdbc.DB2Profile.api._
+import slick.jdbc.GetResult
 
 import scala.concurrent.Future
 
@@ -15,10 +16,13 @@ class SlickReadWriteTemplate extends Db {
     db.run(insertAction)
   }
 
-  def select(): Future[Seq[_]] = {
+  def select: Future[Seq[_]] = {
     val selectAction = sql"SELECT * FROM slick_test".as[(Int, String, Long, Int)]
     db.run(selectAction)
   }
 
-
+  def selectForObject[A: GetResult]: Future[Seq[_]] = {
+    val selectAction = sql"SELECT * FROM slick_test".as[A]
+    db.run(selectAction)
+  }
 }

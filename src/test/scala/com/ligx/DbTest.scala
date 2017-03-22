@@ -3,8 +3,9 @@ package com.ligx
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
-import com.ligx.dao.SlickReadWriteTemplate
+import com.ligx.dao.{SlickDto, SlickReadWriteTemplate}
 import org.scalatest.{FlatSpec, Matchers}
+import slick.jdbc.GetResult
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -39,12 +40,24 @@ class DbTest extends FlatSpec with Matchers {
   "select" should "success" in {
     val template = new SlickReadWriteTemplate
 
-    implicit val slickDtoResult = GetResult(r => )
-
-    val future = template.select()
+    val future = template select
 
     val result = Await.result(future, Duration(2, TimeUnit.SECONDS))
 
-    result.foreach(println _)
+    result.foreach(println)
+  }
+
+  "select to case class" should "success" in {
+    val template = new SlickReadWriteTemplate
+
+    implicit val slickDtoResult = GetResult(r => SlickDto(r.<<, r.<<, r.<<, r.<<))
+
+    val future = template selectForObject
+
+    val result = Await.result(future, Duration(2, TimeUnit.SECONDS))
+
+    result.foreach {
+      case SlickDto(a, b, c, d) => println(s"SlickDto($a, $b, $c, $d)")
+    }
   }
 }
