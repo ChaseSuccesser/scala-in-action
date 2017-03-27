@@ -16,16 +16,6 @@ import scala.concurrent.duration.Duration
   */
 class DbTest extends FlatSpec with Matchers {
 
-  /*
-  CREATE TABLE `slick_test` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(20) DEFAULT NULL,
-  `time` bigint(36) DEFAULT NULL,
-  `age` int(3) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-   */
-
   "insert" should "success" in {
     val template = new SlickReadWriteTemplate
 
@@ -37,27 +27,30 @@ class DbTest extends FlatSpec with Matchers {
     println(s"result: $result")
   }
 
-  "select" should "success" in {
-    val template = new SlickReadWriteTemplate
-
-    val future = template select
-
-    val result = Await.result(future, Duration(2, TimeUnit.SECONDS))
-
-    result.foreach(println)
-  }
-
-  "select to case class" should "success" in {
+  "select for case class instance" should "success" in {
     val template = new SlickReadWriteTemplate
 
     implicit val slickDtoResult = GetResult(r => SlickDto(r.<<, r.<<, r.<<, r.<<))
-
-    val future = template selectForObject
+    val sql = "SELECT * FROM slick_test"
+    val future = template select sql
 
     val result = Await.result(future, Duration(2, TimeUnit.SECONDS))
-
     result.foreach {
       case SlickDto(a, b, c, d) => println(s"SlickDto($a, $b, $c, $d)")
+    }
+  }
+
+  "select for tuple" should "success" in {
+    val template = new SlickReadWriteTemplate
+
+    implicit val getResult = implicitly[GetResult[(Int, String, Long, Int)]]
+    val sql = "select * from slick_test"
+    val future = template select sql
+
+    val result = Await.result(future, Duration(3, TimeUnit.SECONDS))
+
+    result foreach {
+      case (a, b, c, d) => println(s"SlickDto($a, $b, $c, $d)")
     }
   }
 }
