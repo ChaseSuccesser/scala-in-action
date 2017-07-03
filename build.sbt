@@ -28,5 +28,7 @@ libraryDependencies ++= Seq(
   "net.jpountz.lz4" % "lz4" % "1.3.0",
   // common tool
   "commons-io" % "commons-io" % "2.5",
-  "commons-codec" % "commons-codec" % "1.10"
+  "commons-codec" % "commons-codec" % "1.10",
+  // http client
+  "org.scalaj" %% "scalaj-http" % "2.3.0"
 )
