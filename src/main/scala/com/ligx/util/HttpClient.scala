@@ -1,6 +1,6 @@
 package com.ligx.util
 
-import scalaj.http.{Http, HttpRequest, HttpResponse}
+import scalaj.http.{Http, HttpRequest}
 
 /**
   * Author: ligongxing.
@@ -9,20 +9,37 @@ import scalaj.http.{Http, HttpRequest, HttpResponse}
 class HttpClient {
 
   /**
+    * 发送get请求
+    *
     * response.body
     * response.code
     * response.headers
     * response.cookies
     *
     * @param url
+    * @param params
     * @return
     */
-  def get(url: String): String = {
-    val response: HttpResponse[String] = Http("http://www.baidu.com").asString
-    response.body
+  def get(url: String, params: Map[String, String]): String = {
+    val request: HttpRequest = Http(url)
+
+    if(params != null && params.nonEmpty){
+      val requestWithParams = request.params(params)
+      requestWithParams.asString.body
+    } else {
+      request.asString.body
+    }
   }
 
-  def post(url: String, params: Map[String, String]): String = {
+
+  /**
+    * 发送post请求
+    *
+    * @param url
+    * @param params
+    * @return
+    */
+  def post(url: String, params: scala.collection.mutable.Map[String, String]): String = {
     if(url == null || url.trim.equals("")){
       return ""
     }
