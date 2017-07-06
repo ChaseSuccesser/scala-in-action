@@ -1,6 +1,6 @@
 package com.ligx.util
 
-import scalaj.http.{Http, HttpRequest}
+import scalaj.http.{Http, HttpRequest, HttpResponse}
 
 /**
   * Author: ligongxing.
@@ -25,7 +25,8 @@ class HttpClient {
 
     if(params != null && params.nonEmpty){
       val requestWithParams = request.params(params)
-      requestWithParams.asString.body
+      val response: HttpResponse[String] = requestWithParams.asString
+      response.body
     } else {
       request.asString.body
     }

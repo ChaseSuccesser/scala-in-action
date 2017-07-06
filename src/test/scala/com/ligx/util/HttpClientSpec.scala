@@ -27,4 +27,13 @@ class HttpClientSpec extends FlatSpec with Matchers {
     val response = httpClient.get("http://apiall.hotel.test.sankuai.com", paramMap)
     println(response)
   }
+
+  "http get 2" should "" in {
+    val httpClient = new HttpClient
+
+    val paramMap = Map[String, String]("city" -> "北京", "needAddtionalResult" -> "false")
+
+    val response = httpClient.get("http://www.lagou.com/jobs/positionAjax.json", paramMap)
+    println(response)
+  }
 }
