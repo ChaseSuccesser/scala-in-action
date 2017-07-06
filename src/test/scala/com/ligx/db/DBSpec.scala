@@ -1,4 +1,4 @@
-package com.ligx
+package com.ligx.db
 
 import java.util.Date
 import java.util.concurrent.TimeUnit
@@ -14,7 +14,7 @@ import scala.concurrent.duration.Duration
   * Author: ligongxing.
   * Date: 2017年03月17日.
   */
-class DbTest extends FlatSpec with Matchers {
+class DBSpec extends FlatSpec with Matchers {
 
   "insert" should "success" in {
     val template = new SlickReadWriteTemplate
