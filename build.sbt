@@ -30,5 +30,9 @@ libraryDependencies ++= Seq(
   "commons-io" % "commons-io" % "2.5",
   "commons-codec" % "commons-codec" % "1.10",
   // http client
-  "org.scalaj" %% "scalaj-http" % "2.3.0"
+  "org.scalaj" %% "scalaj-http" % "2.3.0",
+  // RxJava2
+  "io.reactivex" % "rxjava" % "1.3.0",
+  // test
+  "junit" % "junit" % "4.12" % "test"
 )
