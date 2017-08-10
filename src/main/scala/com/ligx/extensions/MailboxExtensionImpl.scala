@@ -14,7 +14,7 @@ class MailboxExtensionImpl extends Extension{
 
   def registerMailbox(actorRef: ActorRef, mailbox: CustomMailbox) = mailMap.put(actorRef, mailbox)
 
-  def ungisterMailbox(actorRef: ActorRef) = mailMap.remove(actorRef)
+  def unRegisterMailbox(actorRef: ActorRef) = mailMap.remove(actorRef)
 
   def getMailboxSize(implicit context: ActorContext): Int = mailMap.get(context.self).getMailboxSize
 }

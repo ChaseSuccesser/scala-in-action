@@ -1,13 +1,8 @@
 package com.ligx.rpc
 
-import akka.actor.{Actor, ActorRef, ActorSelection, ActorSystem, Props}
-import akka.pattern.ask
-import akka.util.Timeout
+import akka.actor.{Actor, ActorSelection, ActorSystem, Props}
 import com.ligx.extensions.{CountExtension, MailboxExtension}
 import com.typesafe.config.ConfigFactory
-
-import scala.concurrent.duration._
-import scala.concurrent.Await
 
 /**
   * Created by ligx on 16/6/12.
