@@ -1,7 +1,6 @@
 package com.ligx.es;
 
-import com.meituan.iflight.id.IdGenerator;
-import com.meituan.iflight.json.Jackson;
+import com.alibaba.fastjson.JSON;
 import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.bulk.BulkItemResponse;
@@ -33,13 +32,6 @@ import java.util.TimeZone;
 public class EsClient {
 
     private static final Logger logger = LoggerFactory.getLogger("es");
-
-    private static Jackson jackson = Jackson.custom();
-
-    static {
-        jackson.getMapper().setTimeZone(TimeZone.getDefault());
-    }
-
 
     private static volatile TransportClient client;
 
@@ -122,9 +114,9 @@ public class EsClient {
     public static <T> long addDoc(String index, String type, T doc) {
         TransportClient client = getClient();
 
-        long id = IdGenerator.get();
+        long id = 0L; // TODO 需要用一个id生成器生成id
         IndexResponse response = client.prepareIndex(index, type, "" + id)
-                .setSource(jackson.toJson(doc))
+                .setSource(JSON.toJSONString(doc))
                 .get();
         if (response.getResult() == DocWriteResponse.Result.CREATED) {
             return id;
@@ -148,7 +140,7 @@ public class EsClient {
         TransportClient client = getClient();
 
         UpdateResponse updateResponse = client.prepareUpdate(index, type, id)
-                .setDoc(jackson.toJson(doc))
+                .setDoc(JSON.toJSONString(doc))
                 .get();
 
         if(updateResponse.status() == RestStatus.OK){
@@ -177,7 +169,7 @@ public class EsClient {
 
         if (response.isExists()) {
             String source = response.getSourceAsString();
-            return jackson.fromJson(source, clazz);
+            return JSON.parseObject(source, clazz);
         } else {
             logger.error("Fail to get doc. index={}, type={}, id={}, response={}", index, type, id, response);
             return null;
@@ -220,8 +212,8 @@ public class EsClient {
 
         BulkRequestBuilder bulkRequest = client.prepareBulk();
         for (T doc : docList) {
-            bulkRequest.add(client.prepareIndex(index, type, "" + IdGenerator.get())
-                    .setSource(jackson.toJson(doc)));
+            bulkRequest.add(client.prepareIndex(index, type, "" + 0L)  // TODO 需要用一个id生成器生成id
+                    .setSource(JSON.toJSONString(doc)));
         }
 
         int total = docList.size();

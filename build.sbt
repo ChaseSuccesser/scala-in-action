@@ -50,6 +50,7 @@ libraryDependencies ++= {
     "org.elasticsearch.client" % "transport" % "5.2.2",
     "org.apache.hbase" % "hbase-client" % hbaseVersion,
     "org.apache.hbase" % "hbase-common" % hbaseVersion,
+    "org.apache.hbase" % "hbase-server" % hbaseVersion,
     "com.google.protobuf" % "protobuf-java" % "2.5.0",
     "org.apache.zookeeper" % "zookeeper" % "3.4.5"
   )
