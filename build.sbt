@@ -51,6 +51,7 @@ libraryDependencies ++= {
     "org.apache.hbase" % "hbase-client" % hbaseVersion,
     "org.apache.hbase" % "hbase-common" % hbaseVersion,
     "org.apache.hbase" % "hbase-server" % hbaseVersion,
+    "org.apache.hadoop" % "hadoop-common" % "2.8.1",
     "com.google.protobuf" % "protobuf-java" % "2.5.0",
     "org.apache.zookeeper" % "zookeeper" % "3.4.5",
     "com.thoughtworks.feature" % "caller_2.11" % "2.1.0-M0"
