@@ -1,4 +1,4 @@
-package com.ligx.compress;
+package com.ligx.compact;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;

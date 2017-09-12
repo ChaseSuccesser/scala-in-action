@@ -1,4 +1,4 @@
-package com.ligx.compress;
+package com.ligx.compact;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

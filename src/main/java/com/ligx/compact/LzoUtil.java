@@ -1,4 +1,4 @@
-package com.ligx.compress;
+package com.ligx.compact;
 
 import org.anarres.lzo.*;
 

@@ -1,4 +1,4 @@
-package com.ligx.compress;
+package com.ligx.compact;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
