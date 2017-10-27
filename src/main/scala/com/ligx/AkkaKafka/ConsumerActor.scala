@@ -20,7 +20,7 @@ case class TopicConfig(topic: String, numConsumerThread: Int)
 object ConsumerActor {
   def apply(system: ActorSystem, topicConfigs: Seq[TopicConfig]) = {
     val props = Props(classOf[ConsumerActor], system, topicConfigs)
-    system.actorOf(props)
+    system.actorOf(props, name = "ConsumerActor")
   }
 }
 
