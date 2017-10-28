@@ -1,33 +1,77 @@
 package com.ligx.es.monitor;
 
+import com.ligx.http.HttpAgent;
+import org.apache.hadoop.hbase.util.ArrayUtils;
+
+import java.io.IOException;
+
 /**
  * Author: ligongxing.
  * Date: 2017年10月27日.
  */
-public class ClusterHealth {
+public class EsClusterHealth {
 
     /**
      * 查询集群的健康信息
+     * http://<node-ip>:8419/_cluster/health
+     *
+     * @param ip   es集群节点的ip地址
+     * @param port es http port
+     * @return
      */
-    public void getClusterHealthInfo() {
-        // TODO http://<node-ip>:8419/_cluster/health
+    public static String getClusterHealthInfo(String ip, String port) {
+        try {
+            String url = String.format("http://%s:%s/_cluster/health?pretty", ip, port);
+            return HttpAgent.create().doGet(url);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     /**
      * 使用level参数查询集群健康的细节信息
+     * http://<node-ip>:8419/_cluster/health?level=indices
      * level参数值可以指定为:cluster(默认), indices, shards
+     *
+     * @param ip   es集群节点的ip地址
+     * @param port es http port
+     * @return
      */
-    public void getClusterHealthInfoWithLevel() {
-        // TODO http://<node-ip>:8419/_cluster/health?level=indices
+    public static String getClusterHealthInfoWithLevel(String ip, String port) {
+        try {
+            String url = String.format("http://%s:%s/_cluster/health?pretty&level=indices", ip, port);
+            return HttpAgent.create().doGet(url);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     /**
      * 查询索引的健康信息
+     * http://<node-ip>:8419/_cluster/health/<index...>
      *
-     * @param indices 多个索引
+     * @param ip      es集群节点的ip地址
+     * @param port    es http port
+     * @param indices 多个索引名称
+     * @return
      */
-    public void getIndexHealthInfo(String... indices) {
-        // TODO http://<node-ip>:8419/_cluster/health/<index...>
+    public static String getIndexHealthInfo(String ip, String port, String... indices) {
+        try {
+            if (ArrayUtils.isEmpty(indices)) {
+                return "";
+            }
+            StringBuilder urlSb = new StringBuilder(String.format("http://%s:%s/_cluster/health/", ip, port));
+            for (String index : indices) {
+                urlSb.append(index).append(",");
+            }
+            String url = urlSb.toString().substring(0, urlSb.length() - 1) + "?pretty";
+            return HttpAgent.create().doGet(url);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
 
