@@ -21,10 +21,12 @@ libraryDependencies ++= {
     "com.typesafe.akka" % "akka-http-spray-json-experimental_2.11" % akkaHttpVersion,
     "com.typesafe.akka" % "akka-cluster_2.11" % akkaVersion,
     "org.apache.kafka" % "kafka_2.11" % "0.9.0.1",
+    // mysql
     "com.typesafe.slick" % "slick_2.12" % "3.2.1",
     "mysql" % "mysql-connector-java" % "5.0.8",
-    "org.scalatest" % "scalatest_2.11" % "3.0.0-M15",
+    // thrift
     "org.apache.thrift" % "libthrift" % "0.9.3",
+    // json
     "com.alibaba" % "fastjson" % "1.2.12",
     "org.fusesource.jansi" % "jansi" % "1.13",
     // 压缩工具
@@ -35,25 +37,32 @@ libraryDependencies ++= {
     // common tool
     "commons-io" % "commons-io" % "2.5",
     "commons-codec" % "commons-codec" % "1.10",
+    "commons-collections" % "commons-collections" % "3.2",
+    "org.apache.commons" % "commons-lang3" % "3.5",
+    "commons-lang" % "commons-lang" % "2.6",
     // http client
     "org.scalaj" % "scalaj-http_2.11" % "2.3.0",
+    "org.apache.httpcomponents" % "httpclient" % "4.3.4",
     // RxJava2
     "io.reactivex" % "rxjava" % "1.3.0",
     // test
     "junit" % "junit" % "4.12" % "test",
+    "org.scalatest" % "scalatest_2.11" % "3.0.0-M15",
+    // RocksDB
     "org.rocksdb" % "rocksdbjni" % "5.7.2",
+    // ElasticSearch
     "org.elasticsearch.client" % "transport" % "5.2.2",
-    "commons-collections" % "commons-collections" % "3.2",
-    "org.apache.commons" % "commons-lang3" % "3.5",
-    "commons-lang" % "commons-lang" % "2.6",
-    "commons-io" % "commons-io" % "2.5",
     "org.elasticsearch.client" % "transport" % "5.2.2",
+    // HBase
     "org.apache.hbase" % "hbase-client" % hbaseVersion,
     "org.apache.hbase" % "hbase-common" % hbaseVersion,
     "org.apache.hbase" % "hbase-server" % hbaseVersion,
     "org.apache.hadoop" % "hadoop-common" % "2.8.1",
     "com.google.protobuf" % "protobuf-java" % "2.5.0",
+    // Zookeeper
     "org.apache.zookeeper" % "zookeeper" % "3.4.5",
-    "com.thoughtworks.feature" % "caller_2.11" % "2.1.0-M0"
+    "com.thoughtworks.feature" % "caller_2.11" % "2.1.0-M0",
+    // lombok
+    "org.projectlombok" % "lombok" % "1.16.10"
   )
 }
