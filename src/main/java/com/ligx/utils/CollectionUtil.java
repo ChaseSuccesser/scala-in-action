@@ -1,5 +1,9 @@
 package com.ligx.utils;
 
+import org.apache.commons.collections.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -67,5 +71,45 @@ public class CollectionUtil {
         } else {
             return list2 == null;
         }
+    }
+
+
+    /**
+     * 两个集合中相同的元素保留第二个集合的，不同的元素相互补充
+     *
+     * @param list1
+     * @param list2
+     * @param compareFunc
+     * @param <T>
+     * @return
+     */
+    public static <T> List<T> aggregateCollection(List<T> list1, List<T> list2, BiFunction<T, T, Boolean> compareFunc) {
+        if (CollectionUtils.isEmpty(list1) && CollectionUtils.isEmpty(list2)) {
+            return new ArrayList<>();
+        } else if (CollectionUtils.isNotEmpty(list1) && CollectionUtils.isEmpty(list2)) {
+            return list1;
+        } else if(CollectionUtils.isEmpty(list2) && CollectionUtils.isNotEmpty(list2)) {
+            return list2;
+        }
+
+        List<T> equalElemList = new ArrayList<>();
+
+        for (Iterator<T> it1 = list1.iterator(); it1.hasNext();) {
+            T t1 = it1.next();
+            for (Iterator<T> it2 = list2.iterator(); it2.hasNext();) {
+                T t2 = it2.next();
+                if (compareFunc.apply(t1, t2)) {
+                    equalElemList.add(t2);
+                    it1.remove();
+                    it2.remove();
+                    break;
+                }
+            }
+        }
+
+        list1.addAll(equalElemList);
+        list1.addAll(list2);
+
+        return list1;
     }
 }
