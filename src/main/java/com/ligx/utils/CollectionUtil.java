@@ -75,6 +75,32 @@ public class CollectionUtil {
 
 
     /**
+     * 过滤掉两个集合的交集，保留各自的数据
+     *
+     * @param list1
+     * @param list2
+     * @param compareFunc
+     * @param <T>
+     * @param <U>
+     */
+    public static <T, U> void filterIntersection(List<T> list1, List<U> list2, BiFunction<T, U, Boolean> compareFunc) {
+        if (CollectionUtils.isNotEmpty(list1) && CollectionUtils.isNotEmpty(list2)) {
+            for (Iterator<T> tIt = list1.iterator(); tIt.hasNext();) {
+                T t = tIt.next();
+                for (Iterator<U> uIt = list2.iterator(); uIt.hasNext();) {
+                    U u = uIt.next();
+                    if (compareFunc.apply(t, u)) {
+                        tIt.remove();
+                        uIt.remove();
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+
+    /**
      * 两个集合中相同的元素保留第二个集合的，不同的元素相互补充
      *
      * @param list1
