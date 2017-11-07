@@ -155,6 +155,15 @@ public class CollectionUtil {
         int perListCount = list.size() / splitCount;
 
         List<List<T>> result = new ArrayList<>(splitCount);
+
+        if (perListCount == 0) {
+            result.add(list);
+            for (int i = 0; i < splitCount - 1; i++) {
+                result.add(new ArrayList<>());
+            }
+            return result;
+        }
+
         for (int i = 0; i < splitCount; i++) {
             List<T> partList;
             if (i == splitCount - 1) {
