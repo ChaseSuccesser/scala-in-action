@@ -138,4 +138,32 @@ public class CollectionUtil {
 
         return list1;
     }
+
+
+    /**
+     * 将集合均分为几个子list
+     *
+     * @param list       待分割的集合
+     * @param splitCount 分割的子集合个数
+     * @param <T>
+     * @return
+     */
+    public static <T> List<List<T>> splitList(List<T> list, int splitCount) {
+        if (list == null || list.size() == 0) {
+            return null;
+        }
+        int perListCount = list.size() / splitCount;
+
+        List<List<T>> result = new ArrayList<>(splitCount);
+        for (int i = 0; i < splitCount; i++) {
+            List<T> partList;
+            if (i == splitCount - 1) {
+                partList = list.subList(i * perListCount, list.size());
+            } else {
+                partList = list.subList(i * perListCount, i * perListCount + perListCount);
+            }
+            result.add(partList);
+        }
+        return result;
+    }
 }
