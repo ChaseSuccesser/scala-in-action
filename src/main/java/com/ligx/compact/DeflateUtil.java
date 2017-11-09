@@ -12,7 +12,11 @@ import java.util.zip.Inflater;
  */
 public class DeflateUtil {
 
-    public static byte[] compress(byte input[]) {
+    public static byte[] compress(byte[] input) {
+        if (input == null || input.length == 0) {
+            return new byte[0];
+        }
+
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         Deflater compressor = new Deflater(6);
         try {
@@ -36,6 +40,10 @@ public class DeflateUtil {
     }
 
     public static byte[] uncompress(byte[] input) {
+        if (input == null || input.length == 0) {
+            return new byte[0];
+        }
+
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         Inflater decompressor = new Inflater();
         try {
