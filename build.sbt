@@ -63,6 +63,11 @@ libraryDependencies ++= {
     "org.apache.zookeeper" % "zookeeper" % "3.4.5",
     "com.thoughtworks.feature" % "caller_2.11" % "2.1.0-M0",
     // lombok
-    "org.projectlombok" % "lombok" % "1.16.10"
+    "org.projectlombok" % "lombok" % "1.16.10",
+    // protostuff
+    "io.protostuff" % "protostuff-core" % "1.6.0",
+    "io.protostuff" % "protostuff-runtime" % "1.6.0",
+    // reflection
+    "org.objenesis" % "objenesis" % "2.6"
   )
 }
