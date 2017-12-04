@@ -8,19 +8,28 @@ scalaVersion := "2.12.3"
 
 resolvers += "Local Maven Repository" at "file://" + Path.userHome.absolutePath + "/.m2/repository"
 
+//dependencyOverrides ++= {
+//  Seq(
+//    "org.scala-lang" % "scala-compiler" % scalaVersion.value,
+//    "org.scala-lang" % "scala-xml" % scalaVersion.value,
+//    "org.scala-lang" % "scala-parser-combinators" % scalaVersion.value
+//  )
+//}
+
 libraryDependencies ++= {
   val hbaseVersion = "1.3.1"
   val akkaVersion = "2.5.4"
-  val akkaHttpVersion = "2.4.11.2"
-
+  val akkaHttpVersion = "10.0.11"
   Seq(
     // akka
-    "com.typesafe.akka" % "akka-actor_2.11" % akkaVersion,
-    "com.typesafe.akka" % "akka-remote_2.11" % "2.4.11",
-    "com.typesafe.akka" % "akka-http-experimental_2.11" % akkaHttpVersion,
-    "com.typesafe.akka" % "akka-http-spray-json-experimental_2.11" % akkaHttpVersion,
-    "com.typesafe.akka" % "akka-cluster_2.11" % akkaVersion,
-    "org.apache.kafka" % "kafka_2.11" % "0.9.0.1",
+    "com.typesafe.akka" % "akka-actor_2.12" % akkaVersion,
+    "com.typesafe.akka" % "akka-remote_2.12" % akkaVersion,
+    "com.typesafe.akka" % "akka-http_2.12" % akkaHttpVersion,
+    "com.typesafe.akka" % "akka-http-testkit_2.12" % "10.0.11" % Test,
+    "com.typesafe.akka" % "akka-http-spray-json_2.12" % akkaHttpVersion,
+    "com.typesafe.akka" % "akka-cluster_2.12" % akkaVersion,
+    // kafka
+    "org.apache.kafka" % "kafka_2.12" % "1.0.0",
     // mysql
     "com.typesafe.slick" % "slick_2.12" % "3.2.1",
     "mysql" % "mysql-connector-java" % "5.0.8",
@@ -41,13 +50,13 @@ libraryDependencies ++= {
     "org.apache.commons" % "commons-lang3" % "3.5",
     "commons-lang" % "commons-lang" % "2.6",
     // http client
-    "org.scalaj" % "scalaj-http_2.11" % "2.3.0",
+    "org.scalaj" % "scalaj-http_2.12" % "2.3.0",
     "org.apache.httpcomponents" % "httpclient" % "4.3.4",
     // RxJava2
     "io.reactivex" % "rxjava" % "1.3.0",
     // test
     "junit" % "junit" % "4.12" % "test",
-    "org.scalatest" % "scalatest_2.11" % "3.0.0-M15",
+    "org.scalatest" % "scalatest_2.12" % "3.0.4",
     // RocksDB
     "org.rocksdb" % "rocksdbjni" % "5.7.2",
     // ElasticSearch
@@ -61,7 +70,7 @@ libraryDependencies ++= {
     "com.google.protobuf" % "protobuf-java" % "2.5.0",
     // Zookeeper
     "org.apache.zookeeper" % "zookeeper" % "3.4.5",
-    "com.thoughtworks.feature" % "caller_2.11" % "2.1.0-M0",
+    //"com.thoughtworks.feature" % "caller_2.11" % "2.1.0-M0",
     // lombok
     "org.projectlombok" % "lombok" % "1.16.10",
     // protostuff
