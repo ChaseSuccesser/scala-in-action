@@ -1,5 +1,8 @@
 package com.ligx.util
 
+import akka.actor.ActorSystem
+import akka.http.scaladsl.Http
+import akka.stream.ActorMaterializer
 import org.scalatest.{FlatSpec, Matchers}
 
 
@@ -9,31 +12,21 @@ import org.scalatest.{FlatSpec, Matchers}
   */
 class HttpClientSpec extends FlatSpec with Matchers {
 
-  "http get" should "" in {
-    val httpClient = new HttpClient
-    val response: String = httpClient.get("http://www.baidu.com", null)
-    println(response)
-  }
+  implicit val system = ActorSystem()
+  implicit val mat = ActorMaterializer()
+  implicit val ec = system.dispatcher
+  implicit val http = Http()
 
-  "http post" should "" in {
-    val paramMap = Map[String, String](
-      "departCode" -> "CGO",
-      "arriveCode" -> "SEL",
-      "forwardDate" -> "2017-06-15",
-      "tripType" -> "1",
-      "src" -> "mt_native"
-    )
-    val httpClient = new HttpClient
-    val response = httpClient.get("http://apiall.hotel.test.sankuai.com", paramMap)
-    println(response)
-  }
+  "get" should "" in {
+    HttpClient
+      .get("https://github.com/ChaseSuccesser")
+      .run
+      .map{
+      case r@SimpleHttpResponse(_, _, _, _, _) =>
+        val bodyStr = r.bodyAsString
+        println(bodyStr)
+    }
 
-  "http get 2" should "" in {
-    val httpClient = new HttpClient
-
-    val paramMap = Map[String, String]("city" -> "北京", "needAddtionalResult" -> "false")
-
-    val response = httpClient.get("http://www.lagou.com/jobs/positionAjax.json", paramMap)
-    println(response)
+    Thread.sleep(3000)
   }
 }

@@ -22,6 +22,7 @@ object HttpUtil {
   implicit val executionContext = system.dispatcher
 
   def get(url: String): String = {
+    HttpRequest()
     val responseFuture = Http().singleRequest(HttpRequest(uri = "http://akka.io"))
 
     //    responseFuture onComplete {
