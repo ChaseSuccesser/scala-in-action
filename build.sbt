@@ -20,7 +20,10 @@ libraryDependencies ++= {
   val hbaseVersion = "1.3.1"
   val akkaVersion = "2.5.4"
   val akkaHttpVersion = "10.0.11"
+  val log4jVersion = "2.6.2"
+  val slf4jVersion = "1.7.2"
   Seq(
+    // ------------ scala dependencies -----------
     // akka
     "com.typesafe.akka" % "akka-actor_2.12" % akkaVersion,
     "com.typesafe.akka" % "akka-remote_2.12" % akkaVersion,
@@ -33,6 +36,13 @@ libraryDependencies ++= {
     // mysql
     "com.typesafe.slick" % "slick_2.12" % "3.2.1",
     "mysql" % "mysql-connector-java" % "5.0.8",
+    // http client
+    "org.scalaj" % "scalaj-http_2.12" % "2.3.0",
+    // test
+    "org.scalatest" % "scalatest_2.12" % "3.0.4",
+    //"com.thoughtworks.feature" % "caller_2.11" % "2.1.0-M0",
+
+    // ------------ java dependencies -----------
     // thrift
     "org.apache.thrift" % "libthrift" % "0.9.3",
     // json
@@ -50,13 +60,11 @@ libraryDependencies ++= {
     "org.apache.commons" % "commons-lang3" % "3.5",
     "commons-lang" % "commons-lang" % "2.6",
     // http client
-    "org.scalaj" % "scalaj-http_2.12" % "2.3.0",
     "org.apache.httpcomponents" % "httpclient" % "4.3.4",
     // RxJava2
     "io.reactivex" % "rxjava" % "1.3.0",
     // test
     "junit" % "junit" % "4.12" % "test",
-    "org.scalatest" % "scalatest_2.12" % "3.0.4",
     // RocksDB
     "org.rocksdb" % "rocksdbjni" % "5.7.2",
     // ElasticSearch
@@ -70,13 +78,20 @@ libraryDependencies ++= {
     "com.google.protobuf" % "protobuf-java" % "2.5.0",
     // Zookeeper
     "org.apache.zookeeper" % "zookeeper" % "3.4.5",
-    //"com.thoughtworks.feature" % "caller_2.11" % "2.1.0-M0",
     // lombok
     "org.projectlombok" % "lombok" % "1.16.10",
     // protostuff
     "io.protostuff" % "protostuff-core" % "1.6.0",
     "io.protostuff" % "protostuff-runtime" % "1.6.0",
     // reflection
-    "org.objenesis" % "objenesis" % "2.6"
+    "org.objenesis" % "objenesis" % "2.6",
+    // log
+    "org.apache.logging.log4j" % "log4j-api" % log4jVersion,
+    "org.apache.logging.log4j" % "log4j-core" % log4jVersion,
+    "org.apache.logging.log4j" % "log4j-web" % log4jVersion,
+    "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVersion,
+    "com.lmax" % "disruptor" % "3.2.0",
+    "org.slf4j" % "jcl-over-slf4j" % slf4jVersion,
+    "org.slf4j" % "slf4j-api" % slf4jVersion
   )
 }
