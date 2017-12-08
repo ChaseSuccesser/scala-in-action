@@ -78,36 +78,27 @@ public class RequestCollapse<R> {
     }
 
 
-    private RequestCollapse() {
-    }
-
-    private static RequestCollapse instance = new RequestCollapse();
-
-    public static <R> RequestCollapse<R> getInstance() {
-        return instance;
-    }
-
-    public RequestCollapse withWindowTime(int windowTime) {
+    public RequestCollapse<R> withWindowTime(int windowTime) {
         this.windowTime = windowTime;
         return this;
     }
 
-    public RequestCollapse withPool(ThreadPoolExecutor pool) {
+    public RequestCollapse<R> withPool(ThreadPoolExecutor pool) {
         this.pool = pool;
         return this;
     }
 
-    public RequestCollapse withRepeatKey(String repeatKey) {
+    public RequestCollapse<R> withRepeatKey(String repeatKey) {
         this.repeatKey = repeatKey;
         return this;
     }
 
-    public RequestCollapse withCallable(Callable<R> callable) {
+    public RequestCollapse<R> withCallable(Callable<R> callable) {
         this.callable = callable;
         return this;
     }
 
-    public RequestCollapse withFutureTimeout(int futureTimeout) {
+    public RequestCollapse<R> withFutureTimeout(int futureTimeout) {
         this.futureTimeout = futureTimeout;
         return this;
     }

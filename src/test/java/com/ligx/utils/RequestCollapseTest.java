@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class RequestCollapseTest {
 
-    private static RequestCollapse requestCollapse = RequestCollapse.getInstance();
+    private static RequestCollapse<String> requestCollapse = new RequestCollapse<>();
 
     private static AtomicInteger atomicInteger = new AtomicInteger(0);
 
@@ -175,7 +175,7 @@ public class RequestCollapseTest {
     private String serviceWithCollapse(String request) {
         requestCollapse.withRepeatKey(request).withCallable(() -> downStreamService(request)).withFutureTimeout(7500);
 
-        return (String) requestCollapse.response();
+        return requestCollapse.response();
     }
 
 
