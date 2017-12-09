@@ -25,7 +25,7 @@ public class RequestCollapse<R> {
 
     // optional params
     private int windowTime = 5000;  // 时间窗口(ms)
-    private ThreadPoolExecutor pool = new ThreadPoolExecutor(10, 10, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(1024),
+    private ThreadPoolExecutor pool = new ThreadPoolExecutor(20, 20, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(1024),
             r -> {
                 AtomicLong atomicLong = new AtomicLong(0);
                 return new Thread(r, String.format("RequestCollapseThreadPool-%s", String.valueOf(atomicLong.incrementAndGet())));
