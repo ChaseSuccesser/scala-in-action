@@ -41,6 +41,8 @@ libraryDependencies ++= {
     // test
     "org.scalatest" % "scalatest_2.12" % "3.0.4",
     //"com.thoughtworks.feature" % "caller_2.11" % "2.1.0-M0",
+    // serialize
+    "me.chrons" % "boopickle_2.12" % "1.2.5",
 
     // ------------ java dependencies -----------
     // thrift
