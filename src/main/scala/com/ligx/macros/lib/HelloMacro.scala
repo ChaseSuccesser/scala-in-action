@@ -13,12 +13,11 @@ object HelloMacro {
 
   def greeting: String = macro greetingMacro
 
-  def greetingMacro(c: Context): c.Expr[String] = {
+  def greetingMacro(c: Context): c.Tree = {
     import c.universe._
 
     val now = new Date().toString
 
-    Expr()
-    q"hello $now"
+    q"hello lgx"
   }
 }

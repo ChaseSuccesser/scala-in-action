@@ -10,12 +10,12 @@ import boopickle.Default._
   */
 object SerializeUtil {
 
-  def serialize[T](t: T): Array[Byte] = {
-    val buf = Pickle.intoBytes(t)
-    buf.array()
-  }
-
-  def deserialize[T](bytes: Array[Byte]): T = {
-    Unpickle[T].fromBytes(ByteBuffer.wrap(bytes))
-  }
+//  def serialize[T](t: T): Array[Byte] = {
+//    val buf = Pickle.intoBytes(t)
+//    buf.array()
+//  }
+//
+//  def deserialize[T](bytes: Array[Byte]): T = {
+//    Unpickle[T].fromBytes(ByteBuffer.wrap(bytes))
+//  }
 }

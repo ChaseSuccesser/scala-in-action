@@ -10,10 +10,10 @@ class SerializeUtilSpec extends FlatSpec with Matchers {
 
   case class Person(name: String, age: Int)
 
-  "serialize" should "" in {
-    val p = Person("lgx", 25)
-    val bytes = SerializeUtil.serialize(p)
-    val pp = SerializeUtil.deserialize[Person](bytes)
-    println(s"$pp.name: $pp.age")
-  }
+//  "serialize" should "" in {
+//    val p = Person("lgx", 25)
+//    val bytes = SerializeUtil.serialize(p)
+//    val pp = SerializeUtil.deserialize[Person](bytes)
+//    println(s"$pp.name: $pp.age")
+//  }
 }
