@@ -1,5 +1,6 @@
 package com.ligx.macros
 
+import com.ligx.annotations.TalkingAnimal
 import com.ligx.benchmark.Benchmark
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -22,5 +23,22 @@ class MacrosSpec extends FlatSpec with Matchers {
   def testMethodWithArgs(x: Double, y: Double) = {
     val z = x + y
     Math.pow(z, z)
+  }
+
+
+
+  trait Animal {
+    val name: String
+  }
+
+  @TalkingAnimal("wangwang")
+  case class Dog(name: String) extends Animal
+
+  @TalkingAnimal("miaomiao")
+  case class Cat(name: String) extends Animal
+
+  "TalkingAnimal macro" should "" in {
+    Dog("Goldy").sayHello
+    Cat("Kitty").sayHello
   }
 }
