@@ -19,7 +19,7 @@ public class CacheService {
 
     private static final Logger logger = LoggerFactory.getLogger("cache");
 
-    private static final String DB_PATH = "/opt/logs/iflight-pricing-service/rocksdb";
+    private static final String DB_PATH = "/tmp/data";
 
     static {
         RocksDB.loadLibrary();
