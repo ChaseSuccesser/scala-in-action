@@ -38,7 +38,7 @@ class MacrosSpec extends FlatSpec with Matchers {
   case class Cat(name: String) extends Animal
 
   "TalkingAnimal macro" should "" in {
-    Dog("Goldy").sayHello
-    Cat("Kitty").sayHello
+//    Dog("Goldy").sayHello
+//    Cat("Kitty").sayHello
   }
 }

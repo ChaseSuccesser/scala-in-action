@@ -18,6 +18,7 @@ libraryDependencies ++= {
     "com.typesafe.akka" % "akka-http-testkit_2.12" % "10.0.11" % Test,
     "com.typesafe.akka" % "akka-http-spray-json_2.12" % akkaHttpVersion,
     "com.typesafe.akka" % "akka-cluster_2.12" % akkaVersion,
+    "com.typesafe.akka" % "akka-stream_2.12" % akkaVersion,
     // kafka
     "org.apache.kafka" % "kafka_2.12" % "1.0.0",
     // mysql
