@@ -9,7 +9,7 @@ import akka.http.scaladsl.model.headers.{Accept, RawHeader}
 import akka.stream.Materializer
 import akka.util.ByteString
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * Author: ligongxing.
@@ -74,7 +74,7 @@ case class HttpClient(request: HttpRequest) {
     HttpClient(request.addHeader(Accept(MediaRange(MediaTypes.`application/xml`))))
   }
 
-  def run()(implicit system: ActorSystem, mat: Materializer, http: HttpExt, ec: ExecutionContext) = {
+  def run()(implicit system: ActorSystem, mat: Materializer, http: HttpExt, ec: ExecutionContext): Future[SimpleHttpResponse] = {
     for {
       response <- http.singleRequest(request)
       contentType: ContentType = response.entity.contentType

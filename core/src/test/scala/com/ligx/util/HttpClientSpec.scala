@@ -18,14 +18,13 @@ class HttpClientSpec extends FlatSpec with Matchers {
   implicit val http = Http()
 
   "get" should "" in {
-    HttpClient
-      .get("https://github.com/ChaseSuccesser")
+    HttpClient.get("https://github.com/ChaseSuccesser")
       .run
-      .map{
-      case r@SimpleHttpResponse(_, _, _, _, _) =>
-        val bodyStr = r.bodyAsString
-        println(bodyStr)
-    }
+      .map {
+        case r@SimpleHttpResponse(_, _, _, _, _) =>
+          val bodyStr = r.bodyAsString
+          println(bodyStr)
+      }
 
     Thread.sleep(3000)
   }
