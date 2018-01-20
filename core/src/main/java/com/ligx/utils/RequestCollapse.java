@@ -25,7 +25,7 @@ public class RequestCollapse<R> {
 
     // optional params
     private int windowTime = 5000;  // 时间窗口(ms)
-    private ThreadPoolExecutor pool = new ThreadPoolExecutor(20, 20, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(1024),
+    private ThreadPoolExecutor pool = new ThreadPoolExecutor(50, 50, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(1024),
             r -> {
                 AtomicLong atomicLong = new AtomicLong(0);
                 return new Thread(r, String.format("RequestCollapseThreadPool-%s", String.valueOf(atomicLong.incrementAndGet())));
@@ -53,26 +53,22 @@ public class RequestCollapse<R> {
 
 
     public R response() {
-        startScheduler();
-
-        Future<R> future = map.computeIfAbsent(repeatKey, s -> pool.submit(callable));
-        if (future == null) {
-            future = map.get(repeatKey);
-        }
-
         try {
-            /*
-             有可能会出现：非重复请求的key添加到map -> 定时线程清空map -> get非重复请求的key对应的value，value为null。这种在临界时出现的并发问题。
-             会导致这个请求丢失，无法响应。
-             所以，需要重新提交一次请求
-            */
+            startScheduler();
+
+            if (map.containsKey(repeatKey)) {
+                logger.info("repeat request....");
+            }
+            Future<R> future = map.computeIfAbsent(repeatKey, s -> pool.submit(callable));
+
             if (future == null) {
-                logger.warn("RequestCollapse#response. future is null! key={}", repeatKey);
+                // 兜底
+                logger.warn("RequestCollapser#response. future is null! key={}", repeatKey);
                 future = pool.submit(callable);
             }
             return future.get(futureTimeout, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            logger.error("RequestCollapse#response. key={}", repeatKey, e);
+            logger.error("RequestCollapser#response. key={}", repeatKey, e);
             return null;
         }
     }
