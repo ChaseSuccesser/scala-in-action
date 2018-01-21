@@ -61,7 +61,6 @@ object PageLoader {
   def loadSpecifiedCategoryAllPages(url: String): List[AvMovie] = {
     val browser = JsoupBrowser()
     val doc = browser.get(url)
-    println("------- load home page --------")
     val homePageMovies = loadSpecifiedCategoryCurrPage(doc)
 
     val nextPageElems = doc >> elementList("a[class=next pagegbk]")
