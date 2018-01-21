@@ -9,10 +9,15 @@ import scala.collection.mutable.ListBuffer
 
 object PageLoader {
 
-  private val rootUrl = "https://www.1124n.com"
+  private val rootUrl = "https://www.1124q.com"
 
   def main(args: Array[String]): Unit = {
-    loadSpecifiedCategoryAllPages("https://www.1124n.com/Html/128/")
+    val avMovies = loadSpecifiedCategoryAllPages("https://www.1124q.com/Html/128/")
+
+    println(avMovies.size)
+    avMovies.foreach(println)
+
+    // MovieStorage.saveMovie(avMovies)
   }
 
   /**
@@ -22,7 +27,7 @@ object PageLoader {
     * @return
     */
   def getCategoriesUrl(categories: List[String]): Option[ListBuffer[String]] = {
-    if(categories == null || categories.isEmpty) {
+    if (categories == null || categories.isEmpty) {
       Option.empty
     } else {
       val browser = JsoupBrowser()
@@ -38,10 +43,10 @@ object PageLoader {
           if (liElems != null && liElems.nonEmpty) {
             liElems.foreach(liElem => {
               val categoryName = liElem >> text("a")
-//              if(categories contains categoryName) {
-//                val categoryUrl = rootUrl + (liElem >> element("a") >> attr("href"))
-//                result += categoryUrl
-//              }
+              //              if(categories contains categoryName) {
+              //                val categoryUrl = rootUrl + (liElem >> element("a") >> attr("href"))
+              //                result += categoryUrl
+              //              }
               val categoryUrl = rootUrl + (liElem >> element("a") >> attr("href"))
               println(s"$categoryName : $categoryUrl")
             })
@@ -53,14 +58,14 @@ object PageLoader {
     }
   }
 
-  def loadSpecifiedCategoryAllPages(url: String): Unit = {
+  def loadSpecifiedCategoryAllPages(url: String): List[AvMovie] = {
     val browser = JsoupBrowser()
     val doc = browser.get(url)
     println("------- load home page --------")
-    loadSpecifiedCategoryCurrPage(doc)
+    val homePageMovies = loadSpecifiedCategoryCurrPage(doc)
 
     val nextPageElems = doc >> elementList("a[class=next pagegbk]")
-    if(nextPageElems != null && nextPageElems.nonEmpty) {
+    val restPageMovies = if (nextPageElems != null && nextPageElems.nonEmpty) {
       val totalPageCount: Int = nextPageElems.filter(nextPageElem => "尾页" == (nextPageElem >> text))
         .lift(0)
         .map(nextPageElem => {
@@ -68,33 +73,42 @@ object PageLoader {
           Integer.parseInt(dataAttr.split("-")(1))
         }).getOrElse(0)
       loadSpecifiedCategoryRestPages(url, totalPageCount)
+    } else {
+      List()
     }
+
+    homePageMovies ::: restPageMovies
   }
 
-  def loadSpecifiedCategoryRestPages(url: String, totalPageCount: Int) : Unit = {
-    val newUrl = if(url.endsWith("/")) url else url + "/"
+  def loadSpecifiedCategoryRestPages(url: String, totalPageCount: Int): List[AvMovie] = {
+    if (totalPageCount != 0) {
+      val newUrl = if (url.endsWith("/")) url else url + "/"
 
-    for (i <- 2 to totalPageCount) {
-      println(s"------- load $i page --------")
       val browser = JsoupBrowser()
-      val doc = browser.get(newUrl + s"index-$i" + ".html")
-      loadSpecifiedCategoryCurrPage(doc)
+      val result = for {
+        i <- 2 to totalPageCount
+        doc = browser.get(newUrl + s"index-$i" + ".html")
+      } yield loadSpecifiedCategoryCurrPage(doc)
+      result.flatten.toList
+    } else {
+      List()
     }
   }
 
-  def loadSpecifiedCategoryCurrPage(doc: Document): Unit = {
+  def loadSpecifiedCategoryCurrPage(doc: Document): List[AvMovie] = {
     val movieList = doc >> element("div[class=box movie_list]") >> elementList("li")
     if (movieList != null && movieList.nonEmpty) {
-      movieList.foreach(liElem => {
+      movieList.map(liElem => {
         val aElem = liElem >> element("a")
         val movieName = aElem >> text("h3")
         val downloadUrl = getDownloadUrl(s"""$rootUrl/${aElem >> attr("href")}""").getOrElse("")
         val imageUrl = aElem >> element("img") >> attr("src")
-        val createTime = aElem >> text("span[class=movie_date]")
+        val ext = aElem >> text("span[class=movie_date]")
 
-        println(s"$movieName\n$downloadUrl\n$imageUrl\n$createTime")
-        println("-------")
+        AvMovie(movieName, downloadUrl, imageUrl, ext)
       })
+    } else {
+      List()
     }
   }
 
@@ -111,3 +125,5 @@ object PageLoader {
     Option(doc >> element("ul[class=downurl]") >> element("a") >> attr("href"))
   }
 }
+
+case class AvMovie(movieName: String, downloadUrl: String, imageUrl: String, ext: String)
