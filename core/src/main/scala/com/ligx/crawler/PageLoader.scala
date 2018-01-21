@@ -1,5 +1,6 @@
 package com.ligx.crawler
 
+import com.ligx.util.FileUtil
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL._
@@ -12,12 +13,13 @@ object PageLoader {
   private val rootUrl = "https://www.1124q.com"
 
   def main(args: Array[String]): Unit = {
-    val avMovies = loadSpecifiedCategoryAllPages("https://www.1124q.com/Html/128/")
+    val avMovies = loadSpecifiedCategoryAllPages("https://www.1124q.com/Html/100/")
 
+//    avMovies.foreach(println)
+
+//     MovieStorage.saveMovie(avMovies)
+    FileUtil.writeLines("F:\\电影\\av\\av_movie_list.txt", avMovies.map(_.toString()))
     println(avMovies.size)
-    avMovies.foreach(println)
-
-    // MovieStorage.saveMovie(avMovies)
   }
 
   /**

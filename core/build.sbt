@@ -33,6 +33,8 @@ libraryDependencies ++= {
     "me.chrons" % "boopickle_2.12" % "1.2.5",
     // parse HTML
     "net.ruippeixotog" % "scala-scraper_2.12" % "2.1.0",
+    // file
+    "com.github.pathikrit" % "better-files_2.12" % "3.4.0",
 
     // ------------ java dependencies -----------
     // thrift
