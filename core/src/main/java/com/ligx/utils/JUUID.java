@@ -1,4 +1,4 @@
-package com.ligx.util;
+package com.ligx.utils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
