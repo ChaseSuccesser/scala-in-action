@@ -16,6 +16,8 @@ libraryDependencies ++= {
     "com.typesafe.akka" % "akka-http-spray-json_2.12" % akkaHttpVersion,
     // mysql
     "com.typesafe.slick" % "slick_2.12" % "3.2.1",
+    "com.typesafe.slick" % "slick-hikaricp_2.12" % "3.2.1",
+    "org.slf4j" % "slf4j-nop" % "1.6.4",
     "mysql" % "mysql-connector-java" % "5.0.8",
     // test
     "org.scalatest" % "scalatest_2.12" % "3.0.4",
