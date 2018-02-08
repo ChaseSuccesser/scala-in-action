@@ -1,5 +1,7 @@
 package com.ligx.crawler
 
+import java.util.concurrent.TimeUnit
+
 import com.ligx.util.FileUtil
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
@@ -7,6 +9,8 @@ import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.model.Document
 
 import scala.collection.mutable.ListBuffer
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 
 object PageLoader {
 
@@ -17,9 +21,11 @@ object PageLoader {
 
 //    avMovies.foreach(println)
 
-//     MovieStorage.saveMovie(avMovies)
-    FileUtil.writeLines("F:\\电影\\av\\av_movie_list.txt", avMovies.map(_.toString()))
-    println(avMovies.size)
+    val future: Future[Int] = MovieStorage.saveMovie(avMovies)
+    val result = Await.result(future, Duration(3, TimeUnit.SECONDS))
+    println(s"result = $result")
+    // FileUtil.writeLines("F:\\av_movie_list.txt", avMovies.map(_.toString()))
+    println(s"avMovies size ${avMovies.size}")
   }
 
   /**

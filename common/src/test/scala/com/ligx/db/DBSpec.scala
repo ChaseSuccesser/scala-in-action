@@ -3,7 +3,6 @@ package com.ligx.db
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
-import com.ligx.dao.{DbReadWriteTemplate, SlickDto}
 import org.scalatest.{FlatSpec, Matchers}
 import slick.jdbc.GetResult
 

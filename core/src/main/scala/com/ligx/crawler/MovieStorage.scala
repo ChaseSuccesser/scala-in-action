@@ -17,7 +17,7 @@ object MovieStorage {
         DbReadWriteTemplate.insert(
           s"""
              INSERT INTO av_movie(movie_name, download_url, image_url, ext)
-             VALUES(${m.movieName}, ${m.downloadUrl}, ${m.imageUrl}, ${m.ext});
+             VALUES('${m.movieName}', '${m.downloadUrl}', '${m.imageUrl}', '${m.ext}');
            """)
       })).map(_.sum)
     } else {
