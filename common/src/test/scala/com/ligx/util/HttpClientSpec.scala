@@ -1,8 +1,5 @@
 package com.ligx.util
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.Http
-import akka.stream.ActorMaterializer
 import org.scalatest.{FlatSpec, Matchers}
 
 

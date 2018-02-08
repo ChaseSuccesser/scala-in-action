@@ -9,7 +9,7 @@ libraryDependencies ++= {
   val akkaHttpVersion = "10.0.11"
   val log4jVersion = "2.6.2"
   val slf4jVersion = "1.7.2"
-  val circeVersion = "0.9.1"
+
   Seq(
     // ------------ scala dependencies -----------
     // akka
@@ -22,25 +22,11 @@ libraryDependencies ++= {
     "com.typesafe.akka" % "akka-stream_2.12" % akkaVersion,
     // kafka
     "org.apache.kafka" % "kafka_2.12" % "1.0.0",
-    // mysql
-    "com.typesafe.slick" % "slick_2.12" % "3.2.1",
-    "mysql" % "mysql-connector-java" % "5.0.8",
     // http client
     "org.scalaj" % "scalaj-http_2.12" % "2.3.0",
-    // test
-    "org.scalatest" % "scalatest_2.12" % "3.0.4",
     //"com.thoughtworks.feature" % "caller_2.11" % "2.1.0-M0",
-    // serialize
-    "me.chrons" % "boopickle_2.12" % "1.2.5",
     // parse HTML
     "net.ruippeixotog" % "scala-scraper_2.12" % "2.1.0",
-    // file
-    "com.github.pathikrit" % "better-files_2.12" % "3.4.0",
-    // json (https://circe.github.io/circe)
-    "io.circe" % "circe-core_2.12" % circeVersion,
-    "io.circe" % "circe-generic_2.12" % circeVersion,
-    "io.circe" % "circe-parser_2.12" % circeVersion,
-    "io.circe" % "circe-optics_2.12" % circeVersion,
 
     // ------------ java dependencies -----------
     // thrift

@@ -1,9 +1,5 @@
 package com.ligx.util
 
-import java.nio.ByteBuffer
-
-import boopickle.Default._
-
 /**
   * Author: ligongxing.
   * Date: 2017年12月20日.

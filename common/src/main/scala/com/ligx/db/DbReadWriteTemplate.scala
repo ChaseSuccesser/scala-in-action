@@ -1,4 +1,4 @@
-package com.ligx.dao
+package com.ligx.db
 
 import slick.jdbc.DB2Profile.api._
 import slick.dbio.DBIO

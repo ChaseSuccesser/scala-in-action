@@ -11,7 +11,8 @@ resolvers += Resolver.sonatypeRepo("releases")
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)
 
-lazy val core = Project(id = "core", base = file("core")).dependsOn(macros)
+lazy val core = Project(id = "core", base = file("core")).dependsOn(macros).dependsOn(common)
 lazy val macros = Project(id = "macros", base = file("macros"))
-lazy val root = Project(id = "root", base = file(".")).aggregate(core, macros)
+lazy val common = Project(id = "common", base = file("common"))
+lazy val root = Project(id = "root", base = file(".")).aggregate(core, macros, common)
 

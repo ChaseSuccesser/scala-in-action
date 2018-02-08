@@ -1,4 +1,4 @@
-package com.ligx.dao
+package com.ligx.db
 
 /**
   * Author: ligongxing.

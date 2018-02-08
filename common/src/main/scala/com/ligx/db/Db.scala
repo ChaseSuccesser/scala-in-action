@@ -1,4 +1,4 @@
-package com.ligx.dao
+package com.ligx.db
 
 import com.typesafe.config.ConfigFactory
 import slick.jdbc.JdbcBackend.Database

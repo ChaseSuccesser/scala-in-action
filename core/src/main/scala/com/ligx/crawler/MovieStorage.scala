@@ -2,7 +2,7 @@ package com.ligx.crawler
 
 import java.util.concurrent.Executors
 
-import com.ligx.dao.DbReadWriteTemplate
+import com.ligx.db.DbReadWriteTemplate
 import slick.jdbc.GetResult
 
 import scala.concurrent.{ExecutionContext, Future}
