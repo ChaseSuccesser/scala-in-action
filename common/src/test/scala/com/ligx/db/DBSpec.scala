@@ -48,3 +48,5 @@ class DBSpec extends FlatSpec with Matchers {
     }
   }
 }
+
+case class SlickDto(id: Int, name: String, time: Long, age: Int)
