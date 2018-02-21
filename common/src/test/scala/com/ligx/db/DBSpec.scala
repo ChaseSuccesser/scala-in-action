@@ -47,6 +47,20 @@ class DBSpec extends FlatSpec with Matchers {
       case (a, b, c, d) => println(s"SlickDto($a, $b, $c, $d)")
     }
   }
+
+  "test batchInsert" should "" in {
+    val time = new Date().getTime
+
+    val sql1 = s"insert into slick_test(name, time, age) values('ligx', $time, 24)"
+    val sql2 = s"insert into slick_test(name, time, age) values('ligx', $time, 24)"
+
+    val sqlList = List(sql1, sql2)
+
+    val future = DbReadWriteTemplate.batchInsert(sqlList)
+
+    val result = Await.result(future, Duration(2, TimeUnit.SECONDS))
+    result.foreach(println)
+  }
 }
 
 case class SlickDto(id: Int, name: String, time: Long, age: Int)
