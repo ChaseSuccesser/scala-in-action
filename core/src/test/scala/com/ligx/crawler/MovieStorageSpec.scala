@@ -16,9 +16,9 @@ class MovieStorageSpec extends FlatSpec with Matchers{
   "saveMovie" should "" in {
     val movieList = List(AvMovie("test", "test_download_url", "test_image_url", "2333"))
 
-    val future: Future[Int] =  MovieStorage.saveMovie(movieList)
+    val future: Future[Array[Int]] =  MovieStorage.saveMovie(movieList)
 
-    val result = Await.result(future, Duration(3, TimeUnit.SECONDS))
-    println(s"result = $result")
+    val result = Await.result(future, Duration(2, TimeUnit.SECONDS))
+    println(s"result = ${result.sum}")
   }
 }

@@ -17,9 +17,9 @@ object PageLoader {
 
   def main(args: Array[String]): Unit = {
     val avMovies = loadSpecifiedCategoryAllPages("https://www.1124q.com/Html/100/")
-    val future: Future[Int] = MovieStorage.saveMovie(avMovies)
-    val result = Await.result(future, Duration(3, TimeUnit.SECONDS))
-    println(s"result = $result")
+    val future: Future[Array[Int]] = MovieStorage.saveMovie(avMovies)
+    val result = Await.result(future, Duration(2, TimeUnit.SECONDS))
+    println(s"result = ${result.sum}")
     println(s"avMovies size ${avMovies.size}")
   }
 

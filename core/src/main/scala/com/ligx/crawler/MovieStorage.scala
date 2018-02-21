@@ -11,17 +11,17 @@ object MovieStorage {
 
   implicit val ec = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(10))
 
-  def saveMovie(movies: List[AvMovie]): Future[Int] = {
+  def saveMovie(movies: List[AvMovie]): Future[Array[Int]] = {
     if(movies != null && movies.nonEmpty) {
-      Future.sequence(movies.map(m => {
-        DbReadWriteTemplate.insert(
-          s"""
-             INSERT INTO av_movie(movie_name, download_url, image_url, ext)
-             VALUES('${m.movieName}', '${m.downloadUrl}', '${m.imageUrl}', '${m.ext}');
-           """)
-      })).map(_.sum)
+      val sqlList = movies.map(m =>
+        s"""
+           INSERT INTO av_movie(movie_name, download_url, image_url, ext)
+                        VALUES('${m.movieName}', '${m.downloadUrl}', '${m.imageUrl}', '${m.ext}');
+         """)
+
+      DbReadWriteTemplate.batchInsert(sqlList)
     } else {
-      Future(0)
+      Future(Array(0))
     }
   }
 
