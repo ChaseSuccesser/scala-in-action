@@ -29,6 +29,4 @@ trait Db {
       queueSize = 1000,
       registerMbeans = true)
   )
-
-  Database.forConfig("db")
 }
