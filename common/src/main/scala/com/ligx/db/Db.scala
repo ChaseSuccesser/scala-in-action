@@ -22,7 +22,13 @@ trait Db {
     user = dbConfig.getString("username"),
     password = dbConfig.getString("password"),
     driver = dbConfig.getString("driver"),
-    executor = AsyncExecutor(name = "AsyncExecutor.Slick", numThreads = dbConfig.getInt("numThreads"), queueSize = 1000)
+    executor = AsyncExecutor(
+      name = "lgx_db",
+      minThreads = dbConfig.getInt("numThreads"),
+      maxThreads = dbConfig.getInt("numThreads"),
+      queueSize = 1000,
+      registerMbeans = true)
   )
 
+  Database.forConfig("db")
 }
