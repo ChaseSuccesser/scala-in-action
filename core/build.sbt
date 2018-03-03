@@ -71,13 +71,5 @@ libraryDependencies ++= {
     "io.protostuff" % "protostuff-runtime" % "1.6.0",
     // reflection
     "org.objenesis" % "objenesis" % "2.6",
-    // log
-    "org.apache.logging.log4j" % "log4j-api" % log4jVersion,
-    "org.apache.logging.log4j" % "log4j-core" % log4jVersion,
-    "org.apache.logging.log4j" % "log4j-web" % log4jVersion,
-    "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVersion,
-    "com.lmax" % "disruptor" % "3.2.0",
-    "org.slf4j" % "jcl-over-slf4j" % slf4jVersion,
-    "org.slf4j" % "slf4j-api" % slf4jVersion
   )
 }
