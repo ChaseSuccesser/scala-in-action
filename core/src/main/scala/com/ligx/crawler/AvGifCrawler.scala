@@ -28,13 +28,13 @@ object AvGifCrawler {
     val hrefAttrValue2 = hrefAttrValue.substring(hrefAttrValue.lastIndexOf("/") + 1)
     val endPageNum = Integer.parseInt(hrefAttrValue2.substring(0, hrefAttrValue2.lastIndexOf(".")).split("_")(1))
 
-    val actors = 0 to 9 map { i=>
+    val actors = 0 to 39 map { i=>
       system.actorOf(AvGifCrawlerActor.props(), s"AvGifCrawlerActor-$i")
     }
 
     1 to endPageNum foreach { pageNum =>
       val pageUrl = s"http://www.neihan.net/tags/11_$pageNum.html"
-      actors(pageNum % 10) ! AvGifCrawlerActor.DownloadRequest(pageNum, pageUrl)
+      actors(pageNum % 40) ! AvGifCrawlerActor.DownloadRequest(pageNum, pageUrl)
     }
   }
 }
