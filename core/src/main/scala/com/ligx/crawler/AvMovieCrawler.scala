@@ -11,19 +11,18 @@ import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 
-object PageLoader {
-
+object AvMovieCrawler {
   private val rootUrl = "https://www.9906g.com/"
 
   def main(args: Array[String]): Unit = {
     val categories = List("成人动漫", "经典三级", "无码在线", "S级女优", "宇都宫紫苑", "天海翼", "水菜麗", "泷泽萝拉")
     val urls = getCategoriesUrl(categories).getOrElse(ListBuffer())
     urls foreach { url =>
-          val avMovies = loadSpecifiedCategoryAllPages(url)
-          val future: Future[Array[Int]] = MovieStorage.saveMovie(avMovies)
-          val result = Await.result(future, Duration(2, TimeUnit.SECONDS))
-          println(s"result = ${result.sum}")
-          println(s"avMovies size ${avMovies.size}")
+      val avMovies = loadSpecifiedCategoryAllPages(url)
+      val future: Future[Array[Int]] = MovieStorage.saveMovie(avMovies)
+      val result = Await.result(future, Duration(2, TimeUnit.SECONDS))
+      println(s"result = ${result.sum}")
+      println(s"avMovies size ${avMovies.size}")
     }
   }
 
