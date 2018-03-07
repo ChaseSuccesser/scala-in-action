@@ -16,6 +16,11 @@ object FileUtil {
     file.write(content)(charset = charSet)
   }
 
+  def writeByteArray(filePath: String, bytes: Array[Byte]): Unit = {
+    val file = File(filePath).createIfNotExists()
+    file.writeByteArray(bytes)
+  }
+
   def readLines(filePath: String, charSet: Charset = Charset.forName("UTF-8")): Option[Traversable[String]] = {
     val file = File(filePath)
     if (file.exists) {

@@ -2,7 +2,7 @@ package com.ligx.crawler
 
 import java.util.concurrent.TimeUnit
 
-import net.ruippeixotog.scalascraper.browser.JsoupBrowser
+import net.ruippeixotog.scalascraper.browser.{HtmlUnitBrowser, JsoupBrowser}
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.model.Document
@@ -11,20 +11,23 @@ import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 
-object PageLoader {
-
-  private val rootUrl = "https://www.1124q.com"
+object AvMovieCrawler {
+  private val rootUrl = "https://www.9906g.com/"
 
   def main(args: Array[String]): Unit = {
-    val avMovies = loadSpecifiedCategoryAllPages("https://www.1124q.com/Html/100/")
-    val future: Future[Array[Int]] = MovieStorage.saveMovie(avMovies)
-    val result = Await.result(future, Duration(2, TimeUnit.SECONDS))
-    println(s"result = ${result.sum}")
-    println(s"avMovies size ${avMovies.size}")
+    val categories = List("成人动漫", "经典三级", "无码在线", "S级女优", "宇都宫紫苑", "天海翼", "水菜麗", "泷泽萝拉")
+    val urls = getCategoriesUrl(categories).getOrElse(ListBuffer())
+    urls foreach { url =>
+      val avMovies = loadSpecifiedCategoryAllPages(url)
+      val future: Future[Array[Int]] = MovieStorage.saveMovie(avMovies)
+      val result = Await.result(future, Duration(2, TimeUnit.SECONDS))
+      println(s"result = ${result.sum}")
+      println(s"avMovies size ${avMovies.size}")
+    }
   }
 
   /**
-    * 获取感兴趣的分类的首页url TODO 这种方式获取不到
+    * 获取感兴趣的分类的首页url
     *
     * @param categories
     * @return
@@ -33,26 +36,26 @@ object PageLoader {
     if (categories == null || categories.isEmpty) {
       Option.empty
     } else {
-      val browser = JsoupBrowser()
+      val browser = HtmlUnitBrowser()
       val doc = browser.get(rootUrl)
-      println(doc.toHtml)
 
       val result = ListBuffer[String]()
 
       val navBarList = doc >> elementList("div[class=nav_bar]")
       if (navBarList != null && navBarList.nonEmpty) {
         navBarList.foreach(navBar => {
-          val liElems = navBar >> element("div[class=wrap]") >> element("ul[class=nav_menu]") >> elementList("li")
-          if (liElems != null && liElems.nonEmpty) {
-            liElems.foreach(liElem => {
-              val categoryName = liElem >> text("a")
-              //              if(categories contains categoryName) {
-              //                val categoryUrl = rootUrl + (liElem >> element("a") >> attr("href"))
-              //                result += categoryUrl
-              //              }
-              val categoryUrl = rootUrl + (liElem >> element("a") >> attr("href"))
-              println(s"$categoryName : $categoryUrl")
-            })
+          navBar >?> element("div[class=wrap]") foreach { wrapDiv =>
+            val liElems = wrapDiv >> element("ul[class=nav_menu]") >> elementList("li")
+            if (liElems != null && liElems.nonEmpty) {
+              liElems.foreach(liElem => {
+                liElem >?> text("a") foreach { categoryName =>
+                  if (categories contains categoryName) {
+                    val categoryUrl = rootUrl + (liElem >> element("a") >> attr("href"))
+                    result += categoryUrl
+                  }
+                }
+              })
+            }
           }
         })
       }
@@ -61,6 +64,12 @@ object PageLoader {
     }
   }
 
+  /**
+    * 获取某个category所有的视频
+    *
+    * @param url
+    * @return
+    */
   def loadSpecifiedCategoryAllPages(url: String): List[AvMovie] = {
     val browser = JsoupBrowser()
     val doc = browser.get(url)
@@ -82,6 +91,13 @@ object PageLoader {
     homePageMovies ::: restPageMovies
   }
 
+  /**
+    * 获取某个category从第二页开始的所有视频
+    *
+    * @param url
+    * @param totalPageCount
+    * @return
+    */
   def loadSpecifiedCategoryRestPages(url: String, totalPageCount: Int): List[AvMovie] = {
     if (totalPageCount != 0) {
       val newUrl = if (url.endsWith("/")) url else url + "/"
@@ -97,6 +113,12 @@ object PageLoader {
     }
   }
 
+  /**
+    * 获取某一页所有的视频的详细信息
+    *
+    * @param doc
+    * @return
+    */
   def loadSpecifiedCategoryCurrPage(doc: Document): List[AvMovie] = {
     val movieList = doc >> element("div[class=box movie_list]") >> elementList("li")
     if (movieList != null && movieList.nonEmpty) {

@@ -20,6 +20,7 @@ case class SimpleHttpResponse(statusCode: StatusCode,
                               contentType: ContentType,
                               headers: Seq[HttpHeader],
                               body: ByteString) {
+  def bodyAsByteArray: Array[Byte] = body.toArray[Byte]
   def bodyAsString: String = body.decodeString(charset)
 }
 
