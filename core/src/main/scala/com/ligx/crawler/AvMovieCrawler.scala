@@ -12,6 +12,7 @@ import net.ruippeixotog.scalascraper.model.Document
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import scala.util.{Failure, Success, Try}
 
 case class AvMovie(movieName: String, downloadUrl: String, imageUrl: String, ext: String)
 
@@ -24,7 +25,7 @@ object AvMovieCrawler {
   import AvMovieCrawlerConstants._
 
   def main(args: Array[String]): Unit = {
-    val categories = List("成人动漫", "经典三级", "无码在线", "S级女优", "宇都宫紫苑", "水菜麗", "泷泽萝拉")
+    val categories = List("成人动漫", "经典三级", "无码在线", "S级女优", "宇都宫紫苑", "水菜麗")
     val urls = getCategoriesUrl(categories).getOrElse(ListBuffer())
 
     val system = ActorSystem("AvMovieCrawlerSystem")
@@ -84,58 +85,75 @@ class AvMovieCrawlerActor extends Actor {
   import AvMovieCrawlerConstants._
 
   override def receive: Receive = {
-    case url: String =>
-      println(s"url=$url")
-      val movies = loadSpecifiedCategoryAllPages(url)
+    case categoryUrl: String =>
+      println(s"categoryUrl=$categoryUrl")
+      val movies = loadSpecifiedCategoryAllPages(categoryUrl)
       val future = MovieStorage.saveMovie(movies)
       val result = Await.result(future, Duration(2, TimeUnit.SECONDS))
-      println(s"url=$url, movies size=${movies.size}, insert count=$result")
+      println(s"categoryUrl=$categoryUrl, movies size=${movies.size}, insert count=$result")
     case _ => println("unknown message!")
   }
 
   /**
     * 获取某个category所有的视频
     *
-    * @param url
+    * @param categoryUrl
     * @return
     */
-  def loadSpecifiedCategoryAllPages(url: String): List[AvMovie] = {
+  def loadSpecifiedCategoryAllPages(categoryUrl: String): List[AvMovie] = {
     val browser = JsoupBrowser()
-    val doc = browser.get(url)
-    val homePageMovies = loadSpecifiedCategoryCurrPage(doc)
+    val docResult = Try(browser.get(categoryUrl))
+    docResult match {
+      case Success(doc) =>
+        val homePageMovies = loadSpecifiedCategoryCurrPage(doc)
 
-    val nextPageElems = doc >> elementList("a[class=next pagegbk]")
-    val restPageMovies = if (nextPageElems != null && nextPageElems.nonEmpty) {
-      val totalPageCount: Int = nextPageElems.filter(nextPageElem => "尾页" == (nextPageElem >> text))
-        .lift(0)
-        .map(nextPageElem => {
-          val dataAttr = nextPageElem >> attr("data")
-          Integer.parseInt(dataAttr.split("-")(1))
-        }).getOrElse(0)
-      loadSpecifiedCategoryRestPages(url, totalPageCount)
-    } else {
-      List()
+        val nextPageElems = doc >> elementList("a[class=next pagegbk]")
+        val restPageMovies = if (nextPageElems != null && nextPageElems.nonEmpty) {
+          val totalPageCount: Int = nextPageElems.filter(nextPageElem => "尾页" == (nextPageElem >> text))
+            .lift(0)
+            .map(nextPageElem => {
+              val dataAttr = nextPageElem >> attr("data")
+              Integer.parseInt(dataAttr.split("-")(1))
+            }).getOrElse(0)
+          loadSpecifiedCategoryRestPages(categoryUrl, totalPageCount)
+        } else {
+          List()
+        }
+
+        homePageMovies ::: restPageMovies
+      case Failure(e) =>
+        println(s"有问题的categoryUrl=$categoryUrl")
+        println(e.getMessage)
+        Nil
     }
-
-    homePageMovies ::: restPageMovies
   }
 
   /**
     * 获取某个category从第二页开始的所有视频
     *
-    * @param url
+    * @param categoryUrl
     * @param totalPageCount
     * @return
     */
-  def loadSpecifiedCategoryRestPages(url: String, totalPageCount: Int): List[AvMovie] = {
+  def loadSpecifiedCategoryRestPages(categoryUrl: String, totalPageCount: Int): List[AvMovie] = {
     if (totalPageCount != 0) {
-      val newUrl = if (url.endsWith("/")) url else url + "/"
+      val newCategoryUrl = if (categoryUrl.endsWith("/")) categoryUrl else categoryUrl + "/"
 
       val browser = JsoupBrowser()
+
       val result = for {
         i <- 2 to totalPageCount
-        doc = browser.get(newUrl + s"index-$i" + ".html")
-      } yield loadSpecifiedCategoryCurrPage(doc)
+        categoryIndexUrl = newCategoryUrl + s"index-$i" + ".html"
+        docResult = Try(browser.get(categoryIndexUrl))
+      } yield {
+        docResult match {
+          case Success(doc) => loadSpecifiedCategoryCurrPage(doc)
+          case Failure(e) =>
+            println(s"有问题的categoryIndexUrl=$categoryIndexUrl")
+            println(e.getMessage)
+            Nil
+        }
+      }
       result.flatten.toList
     } else {
       List()
@@ -178,8 +196,8 @@ class AvMovieCrawlerActor extends Actor {
       Option(doc >> element("ul[class=downurl]") >> element("a") >> attr("href"))
     } catch {
       case e: Exception =>
-        e.printStackTrace()
-        println(s"发生错误的ul: $movieUrl")
+        println(s"发生错误的detail page url: $movieUrl")
+        println(e.getMessage)
         None
     }
   }
