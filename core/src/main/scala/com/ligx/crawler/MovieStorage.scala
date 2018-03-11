@@ -11,17 +11,37 @@ object MovieStorage {
 
   implicit val ec = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(10))
 
-  def saveMovie(movies: List[AvMovie]): Future[Array[Int]] = {
+  def saveMovies(movies: List[AvMovie]): Future[Array[Int]] = {
     if(movies != null && movies.nonEmpty) {
-      val sqlList = movies.map(m =>
-        s"""
-           INSERT INTO av_movie(movie_name, download_url, image_url, ext)
-           VALUES('${m.movieName}', '${m.downloadUrl}', '${m.imageUrl}', '${m.ext}');
-         """)
+      val sqlList = movies.filter(_.downloadUrl != "").map(m =>
+        s"""INSERT INTO av_movie(movie_name, download_url, image_url, ext) VALUES('${m.movieName}', '${m.downloadUrl}', '${m.imageUrl}', '${m.ext}');""")
 
-      DbReadWriteTemplate.batchInsert(sqlList)
+      try {
+        DbReadWriteTemplate.batchInsert(sqlList)
+      } catch {
+        case e:Exception =>
+          e.printStackTrace()
+          sqlList.foreach(println)
+          Future(Array(0))
+      }
     } else {
       Future(Array(0))
+    }
+  }
+
+  def saveMovie(movies: List[AvMovie]): Future[Int] = {
+    if(movies != null && movies.nonEmpty) {
+      val futures = movies.map(m =>{
+        val sql = s"""INSERT INTO av_movie(movie_name, download_url, image_url, ext) VALUES('${m.movieName}', '${m.downloadUrl}', '${m.imageUrl}', '${m.ext}');"""
+        DbReadWriteTemplate.insert(sql).recover{case e: Exception => {
+          e.printStackTrace()
+          println(s"有问题的SQL: $sql")
+          0
+        }}
+      })
+      Future.sequence(futures).map(_.sum)
+    } else {
+      Future(0)
     }
   }
 

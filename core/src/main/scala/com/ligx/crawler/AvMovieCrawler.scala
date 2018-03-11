@@ -1,28 +1,39 @@
 package com.ligx.crawler
 
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 
+import akka.actor.{Actor, ActorSystem, Props}
 import net.ruippeixotog.scalascraper.browser.{HtmlUnitBrowser, JsoupBrowser}
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.model.Document
 
 import scala.collection.mutable.ListBuffer
+import scala.concurrent.Await
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
+
+case class AvMovie(movieName: String, downloadUrl: String, imageUrl: String, ext: String)
+
+object AvMovieCrawlerConstants {
+  val rootUrl = "https://www.9906g.com"
+}
 
 object AvMovieCrawler {
-  private val rootUrl = "https://www.9906g.com/"
+
+  import AvMovieCrawlerConstants._
 
   def main(args: Array[String]): Unit = {
-    val categories = List("成人动漫", "经典三级", "无码在线", "S级女优", "宇都宫紫苑", "天海翼", "水菜麗", "泷泽萝拉")
+    val categories = List("成人动漫", "经典三级", "无码在线", "S级女优", "宇都宫紫苑", "水菜麗", "泷泽萝拉")
     val urls = getCategoriesUrl(categories).getOrElse(ListBuffer())
+
+    val system = ActorSystem("AvMovieCrawlerSystem")
+
+    val atomic = new AtomicInteger(0)
+
     urls foreach { url =>
-      val avMovies = loadSpecifiedCategoryAllPages(url)
-      val future: Future[Array[Int]] = MovieStorage.saveMovie(avMovies)
-      val result = Await.result(future, Duration(2, TimeUnit.SECONDS))
-      println(s"result = ${result.sum}")
-      println(s"avMovies size ${avMovies.size}")
+      val actor = system.actorOf(AvMovieCrawlerActor.props, String.valueOf(atomic.incrementAndGet()))
+      actor ! url
     }
   }
 
@@ -59,9 +70,27 @@ object AvMovieCrawler {
           }
         })
       }
-
       Option(result)
     }
+  }
+}
+
+object AvMovieCrawlerActor {
+  def props: Props = Props[AvMovieCrawlerActor]
+}
+
+class AvMovieCrawlerActor extends Actor {
+
+  import AvMovieCrawlerConstants._
+
+  override def receive: Receive = {
+    case url: String =>
+      println(s"url=$url")
+      val movies = loadSpecifiedCategoryAllPages(url)
+      val future = MovieStorage.saveMovie(movies)
+      val result = Await.result(future, Duration(2, TimeUnit.SECONDS))
+      println(s"url=$url, movies size=${movies.size}, insert count=$result")
+    case _ => println("unknown message!")
   }
 
   /**
@@ -144,10 +173,14 @@ object AvMovieCrawler {
     */
   def getDownloadUrl(movieUrl: String): Option[String] = {
     val browser = JsoupBrowser()
-    val doc = browser.get(movieUrl)
-
-    Option(doc >> element("ul[class=downurl]") >> element("a") >> attr("href"))
+    try {
+      val doc = browser.get(movieUrl)
+      Option(doc >> element("ul[class=downurl]") >> element("a") >> attr("href"))
+    } catch {
+      case e: Exception =>
+        e.printStackTrace()
+        println(s"发生错误的ul: $movieUrl")
+        None
+    }
   }
 }
-
-case class AvMovie(movieName: String, downloadUrl: String, imageUrl: String, ext: String)
