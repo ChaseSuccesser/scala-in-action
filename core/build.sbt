@@ -28,6 +28,8 @@ libraryDependencies ++= {
     //"com.thoughtworks.feature" % "caller_2.11" % "2.1.0-M0",
     // parse HTML
     "net.ruippeixotog" % "scala-scraper_2.12" % "2.1.0",
+    // inject
+    "net.codingwell" %% "scala-guice" % "4.1.1",
 
     // ------------ java dependencies -----------
     // thrift
@@ -71,6 +73,6 @@ libraryDependencies ++= {
     "io.protostuff" % "protostuff-core" % "1.6.0",
     "io.protostuff" % "protostuff-runtime" % "1.6.0",
     // reflection
-    "org.objenesis" % "objenesis" % "2.6",
+    "org.objenesis" % "objenesis" % "2.6"
   )
 }
