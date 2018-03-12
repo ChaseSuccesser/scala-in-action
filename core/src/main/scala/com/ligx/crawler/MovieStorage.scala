@@ -31,7 +31,7 @@ object MovieStorage {
 
   def saveMovie(movies: List[AvMovie]): Future[Int] = {
     if(movies != null && movies.nonEmpty) {
-      val futures = movies.map(m =>{
+      val futures = movies.filter(_.movieName != "").map(m =>{
         val sql = s"""INSERT INTO av_movie(movie_name, download_url, image_url, ext) VALUES('${m.movieName}', '${m.downloadUrl}', '${m.imageUrl}', '${m.ext}');"""
         DbReadWriteTemplate.insert(sql).recover{case e: Exception => {
           e.printStackTrace()
