@@ -20,6 +20,7 @@ libraryDependencies ++= {
     "com.typesafe.akka" % "akka-http-spray-json_2.12" % akkaHttpVersion,
     "com.typesafe.akka" % "akka-cluster_2.12" % akkaVersion,
     "com.typesafe.akka" % "akka-stream_2.12" % akkaVersion,
+    "com.typesafe.akka" % "akka-stream-testkit_2.12" % akkaVersion % Test,
     "com.typesafe.akka" % "akka-persistence_2.12" % akkaVersion,
     // kafka
     "org.apache.kafka" % "kafka_2.12" % "1.0.0",
