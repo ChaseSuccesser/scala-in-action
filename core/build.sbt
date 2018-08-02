@@ -74,6 +74,8 @@ libraryDependencies ++= {
     "io.protostuff" % "protostuff-core" % "1.6.0",
     "io.protostuff" % "protostuff-runtime" % "1.6.0",
     // reflection
-    "org.objenesis" % "objenesis" % "2.6"
+    "org.objenesis" % "objenesis" % "2.6",
+    // mongodb
+    "org.mongodb" % "mongo-java-driver" % "3.8.0"
   )
 }
