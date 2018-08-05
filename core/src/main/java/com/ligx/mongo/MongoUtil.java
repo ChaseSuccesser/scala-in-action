@@ -6,18 +6,19 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.*;
-import com.mongodb.client.model.CreateCollectionOptions;
-import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.*;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.mongodb.client.model.Projections.*;
 
 /**
  * Author: ligongxing.
@@ -206,8 +207,21 @@ public class MongoUtil {
     }
 
     // ------------------------------ query -------------------------------
-    public static <T> Optional<List<T>> findMany(Bson filter, Class<T> clazz, String collectionName) {
-        MongoCursor<Document> cursor = collection(collectionName).find(filter).iterator();
+    private static FindIterable<Document> filter(String collectionName, Bson filter) {
+        FindIterable<Document> findIterable = collection(collectionName).find(filter);
+        return findIterable;
+    }
+
+//    private static FindIterable<Document> sort(FindIterable<Document> it, Map<String, Integer> sortFieldType) {
+//        it.sort(Sorts.ascending())
+//    }
+
+    public static <T> Optional<List<T>> findMany(Bson filter, List<String> fields, Class<T> clazz, String collectionName) {
+        FindIterable<Document> findIterable = filter(collectionName, filter);
+        if (CollectionUtils.isNotEmpty(fields)) {
+            findIterable.projection(Projections.fields(Projections.include(fields), Projections.excludeId()));
+        }
+        MongoCursor<Document> cursor = findIterable.iterator();
         List<T> list = new ArrayList<>();
         while (cursor.hasNext()) {
             list.add(JSON.parseObject(cursor.next().toJson(), clazz));
@@ -215,8 +229,12 @@ public class MongoUtil {
         return Optional.of(list);
     }
 
-    public static Optional<List<Document>> findMany(Bson filter, String collectionName) {
-        MongoCursor<Document> cursor = collection(collectionName).find(filter).iterator();
+    public static Optional<List<Document>> findMany(Bson filter, List<String> fields, String collectionName) {
+        FindIterable<Document> findIterable = collection(collectionName).find(filter);
+        if (CollectionUtils.isNotEmpty(fields)) {
+            findIterable.projection(Projections.fields(Projections.include(fields), Projections.excludeId()));
+        }
+        MongoCursor<Document> cursor = findIterable.iterator();
         List<Document> list = new ArrayList<>();
         while (cursor.hasNext()) {
             list.add(cursor.next());
@@ -224,21 +242,33 @@ public class MongoUtil {
         return Optional.of(list);
     }
 
-    public static <T> Optional<T> findOne(Bson filter, Class<T> clazz, String collectionName) {
-        Document document = collection(collectionName).find(filter).first();
+    public static <T> Optional<T> findOne(Bson filter, List<String> fields, Class<T> clazz, String collectionName) {
+        FindIterable<Document> findIterable = collection(collectionName).find(filter);
+        if (CollectionUtils.isNotEmpty(fields)) {
+            findIterable.projection(Projections.fields(Projections.include(fields), Projections.excludeId()));
+        }
+        Document document = findIterable.first();
         if (document != null) {
             return Optional.ofNullable(JSON.parseObject(document.toJson(), clazz));
         }
         return Optional.empty();
     }
 
-    public static Optional<Document> findOne(Bson filter, String collectionName) {
-        Document document = collection(collectionName).find(filter).first();
+    public static Optional<Document> findOne(Bson filter, List<String> fields, String collectionName) {
+        FindIterable<Document> findIterable = collection(collectionName).find(filter);
+        if (CollectionUtils.isNotEmpty(fields)) {
+            findIterable.projection(Projections.fields(Projections.include(fields), Projections.excludeId()));
+        }
+        Document document = findIterable.first();
         return Optional.ofNullable(document);
     }
 
-    public static Optional<List<Document>> queryByPage(Bson filter, int pageNum, int pageSize, String collectionName) {
-        MongoCursor<Document> cursor = collection(collectionName).find(filter).skip((pageNum - 1) * pageSize).limit(pageSize).iterator();
+    public static Optional<List<Document>> queryByPage(Bson filter, List<String> fields, int pageNum, int pageSize, String collectionName) {
+        FindIterable<Document> findIterable = collection(collectionName).find(filter);
+        if (CollectionUtils.isNotEmpty(fields)) {
+            findIterable.projection(Projections.fields(Projections.include(fields), Projections.excludeId()));
+        }
+        MongoCursor<Document> cursor = findIterable.skip((pageNum - 1) * pageSize).limit(pageSize).iterator();
         List<Document> list = new ArrayList<>();
         while (cursor.hasNext()) {
             list.add(cursor.next());
@@ -259,13 +289,52 @@ public class MongoUtil {
     /**
      * 创建索引
      *
-     * 示例：在i字段上创建一个升序的索引
-     * createIndex(new Document("i", 1));
-     *
-     * @param document
+     * @param map
+     * @param unique
+     * @param collectionName
      */
-    public static void createIndex(Document document, String collectionName) {
-        collection(collectionName).createIndex(document);
+    public static void createIndex(Map<String, Integer> map, boolean unique, String collectionName) {
+        if (MapUtils.isEmpty(map)) {
+            return;
+        }
+        List<String> fields = new ArrayList<>();
+        Set<Integer> types = new HashSet<>();
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+            fields.add(entry.getKey());
+            types.add(entry.getValue());
+        }
+        IndexOptions indexOptions = new IndexOptions().unique(unique);
+        if (types.size() == 1) {
+            int type = types.iterator().next();
+            if (type == 1) {
+                collection(collectionName).createIndex(Indexes.ascending(fields), indexOptions);
+            } else if (type == -1) {
+                collection(collectionName).createIndex(Indexes.descending(fields), indexOptions);
+            }
+        } else {
+            List<Bson> bsonList = new ArrayList<>();
+            for (Map.Entry<String, Integer> entry : map.entrySet()) {
+                String field = entry.getKey();
+                int type = entry.getValue();
+                if (type == 1) {
+                    bsonList.add(Indexes.ascending(field));
+                } else if (type == -1) {
+                    bsonList.add(Indexes.descending(field));
+                }
+            }
+            collection(collectionName).createIndex(Indexes.compoundIndex(bsonList), indexOptions);
+        }
+    }
+
+    public static List<String> listIndexes(String collectionName) {
+        MongoCursor<Document> cursor = collection(collectionName).listIndexes().iterator();
+        List<String> list = new ArrayList<>();
+        while (cursor.hasNext()) {
+            Document doc = cursor.next();
+            String indexName = doc.getString("name");
+            list.add(indexName);
+        }
+        return list;
     }
 
 }
