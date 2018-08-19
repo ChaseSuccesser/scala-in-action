@@ -1,11 +1,9 @@
 package com.ligx.id;
 
-
+import com.ligx.utils.NetUtil;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Calendar;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Author: ligongxing.
@@ -15,37 +13,51 @@ public class IdGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IdGenerator.class);
 
-    public static final int TOTAL_BITS_LENGTH = 63;
-    public static final int TIME_BITS_LENGTH = 41;
-    public static final int NODE_BITS_LENGTH = 10;
-    private static final int COUNT_BITS_LENGTH = 12;
-    private static final long TIME_BITS_MASK = 2199023255551L;
-    private static final int TIME_BITS_SHIFT_SIZE = 22;
-    private static final int NODE_BITS_MASK = 1023;
-    private static final int MAX_COUNTER = 4096;
-    private int nodeId;
-    private AtomicInteger counter;
-    private long lastMillisecond;
+    /**
+     * 每一部分占用的位数
+     */
+    private static final long TIME_STAMP_BIT = 42;
+    private static final long NODE_BIT = 10;
+    private static final long SEQUENCE_BIT = 12;
+
+    /**
+     * 每一部分的最大值
+     */
+    private static final long MAX_SEQUENCE_NUM = -1L ^ (-1L << SEQUENCE_BIT);
+
+    /**
+     * 每一部分向左的位移
+     */
+    private static final long NODE_LEFT = SEQUENCE_BIT;
+    private static final long TIMESTAMP_LEFT = NODE_BIT + SEQUENCE_BIT;
+
+    private long node;            //机器节点标识
+    private long sequence = 0L;   //序列号
+    private long lastStamp = -1L; //上一次时间戳
+
     private static IdGenerator instance = new IdGenerator();
 
     private IdGenerator() {
-        this.nodeId = (int) (Math.random() * 1000);
-        this.counter = new AtomicInteger(0);
+        long ip = NetUtil.ipToLong(NetUtil.getIp());
+        this.node = ip & 0x3FFL;
     }
+
 
     public static long get() {
         long id = 0L;
         try {
-            id = IdGenerator.instance.nextTicket();
+            id = IdGenerator.instance.nextId();
         } catch (Exception e) {
             LOGGER.error("IdGenerator->get:error", e);
+            System.err.println(e.getMessage());
         }
         if (id == 0L) {
             try {
                 Thread.sleep(3L);
-                id = IdGenerator.instance.nextTicket();
+                id = IdGenerator.instance.nextId();
             } catch (Exception e) {
-                LOGGER.error("IdGenerator->get:error", e);
+                LOGGER.error("IdGenerator#get:error", e);
+                System.err.println(e.getMessage());
             }
         }
         if (id == 0L) {
@@ -54,41 +66,64 @@ public class IdGenerator {
         return id;
     }
 
-    private synchronized long nextTicket() {
-        final long currentMillisecond = System.currentTimeMillis();
-        if (currentMillisecond < this.lastMillisecond) {
-            throw new RuntimeException("time is out of sync by " + (this.lastMillisecond - currentMillisecond) + "ms");
+
+    /**
+     * 产生下一个ID
+     *
+     * @return
+     */
+    private synchronized long nextId() {
+        long currStamp = getCurrStamp();
+        if (currStamp < lastStamp) {
+            throw new RuntimeException("Clock moved backwards.  Refusing to generate id");
         }
-        long ts = currentMillisecond & 0x1FFFFFFFFFFL;
-        ts <<= 22;
-        final int count = this.counter.incrementAndGet();
-        if (currentMillisecond == this.lastMillisecond && count >= 4096) {
-            throw new RuntimeException("too much requests cause counter overflow");
+
+        if (currStamp == lastStamp) {
+            // 相同毫秒内，序列号递增
+            sequence = (sequence + 1) & MAX_SEQUENCE_NUM;
+            // 同一毫秒内，序列号已经达到最大，切到下一毫秒
+            if (sequence == 0L) {
+                currStamp = getNextMills();
+            }
+        } else {
+            // 不同毫秒内，序列号置为0
+            sequence = 0L;
         }
-        if (count >= 4096) {
-            this.counter = new AtomicInteger(0);
-        }
-        final int node = (this.nodeId & 0x3FF) << 12;
-        this.lastMillisecond = currentMillisecond;
-        return ts + node + this.counter.get();
+
+        lastStamp = currStamp;
+
+        return (lastStamp) << TIMESTAMP_LEFT
+                | node << NODE_LEFT
+                | sequence;
     }
 
-    public static long timeStartId(final long timeMs) {
-        long ts = timeMs & 0x1FFFFFFFFFFL;
-        ts <<= 22;
-        return ts;
+
+    private long getNextMills() {
+        long mill = getCurrStamp();
+        while (mill <= lastStamp) {
+            mill = getCurrStamp();
+        }
+        return mill;
     }
 
-    public static void main(final String[] args) {
-        System.out.println(get());
-        final Calendar c = Calendar.getInstance();
-        System.out.println(timeStartId(c.getTimeInMillis()));
-        c.set(14, 0);
-        c.set(13, 0);
-        c.set(12, 0);
-        c.set(11, 0);
-        c.add(5, 1);
-        System.out.println(timeStartId(c.getTimeInMillis()));
+    private long getCurrStamp() {
+        return System.currentTimeMillis();
     }
 
+
+    /**
+     * 反解出id中的各个部分值
+     *
+     * @param id
+     * @return
+     */
+    public static String parseId(long id) {
+        long sequenceNum = (id << (64 - SEQUENCE_BIT)) >> (64 - SEQUENCE_BIT);
+        long nodeNum = (id << (64 - NODE_BIT - SEQUENCE_BIT)) >> (64 - NODE_BIT);
+        long timeStamp = id >> (64 - TIME_STAMP_BIT);
+
+        String time = new DateTime(timeStamp).toString("yyyy-MM-dd HH:mm:ss:SSS");
+
+        return String.format("time:%s, nodeNum:%s, sequence:%s", time, nodeNum, sequenceNum);
+    }
 }

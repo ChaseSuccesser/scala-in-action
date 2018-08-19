@@ -1,8 +1,9 @@
-package com.ligx.id;
+package com.ligx.id.meituan;
 
 
-import java.util.*;
-import java.text.*;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Author: ligongxing.
