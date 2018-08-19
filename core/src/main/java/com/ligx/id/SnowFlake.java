@@ -1,5 +1,7 @@
 package com.ligx.id;
 
+import org.joda.time.DateTime;
+
 /**
  * twitter的snowflake算法.
  *
@@ -17,104 +19,109 @@ package com.ligx.id;
  */
 public class SnowFlake {
 
-  /**
-   * 起始的时间戳
-   */
-  private static final long START_STAMP = 1480166465631L;
+    /**
+     * 起始的时间戳
+     */
+    private static final long START_STAMP = 1480166465631L;
 
-  /**
-   * 每一部分占用的位数
-   */
-  private static final long TIME_STAMP_BIT = 42;
-  private static final long DATA_CENTER_BIT = 5;
-  private static final long MACHINE_BIT = 5;
-  private static final long SEQUENCE_BIT = 12;
+    /**
+     * 每一部分占用的位数
+     */
+    private static final long TIME_STAMP_BIT = 42;
+    private static final long DATA_CENTER_BIT = 5;
+    private static final long MACHINE_BIT = 5;
+    private static final long SEQUENCE_BIT = 12;
 
-  /**
-   * 每一部分的最大值
-   */
-  private static final long MAX_DATA_CENTER_NUM = -1L ^ (-1L << DATA_CENTER_BIT);
-  private static final long MAX_MACHINE_NUM = -1L ^ (-1L << MACHINE_BIT);
-  private static final long MAX_SEQUENCE_NUM = -1L ^ (-1L << SEQUENCE_BIT);
+    /**
+     * 每一部分的最大值
+     */
+    private static final long MAX_DATA_CENTER_NUM = -1L ^ (-1L << DATA_CENTER_BIT);
+    private static final long MAX_MACHINE_NUM = -1L ^ (-1L << MACHINE_BIT);
+    private static final long MAX_SEQUENCE_NUM = -1L ^ (-1L << SEQUENCE_BIT);
 
-  /**
-   * 每一部分向左的位移
-   */
-  private static final long MACHINE_LEFT = SEQUENCE_BIT;
-  private static final long DATA_CENTER_LEFT = MACHINE_BIT + SEQUENCE_BIT;
-  private static final long TIMESTAMP_LEFT = DATA_CENTER_BIT + MACHINE_BIT + SEQUENCE_BIT;
+    /**
+     * 每一部分向左的位移
+     */
+    private static final long MACHINE_LEFT = SEQUENCE_BIT;
+    private static final long DATA_CENTER_LEFT = MACHINE_BIT + SEQUENCE_BIT;
+    private static final long TIMESTAMP_LEFT = DATA_CENTER_BIT + MACHINE_BIT + SEQUENCE_BIT;
 
-  private long dataCenterId;    //数据中心
-  private long machineId;       //机器标识
-  private long sequence = 0L;   //序列号
-  private long lastStamp = -1L; //上一次时间戳
+    private long dataCenterId;    //数据中心
+    private long machineId;       //机器标识
+    private long sequence = 0L;   //序列号
+    private long lastStamp = -1L; //上一次时间戳
 
-  public SnowFlake(long dataCenterId, long machineId) {
-    if (dataCenterId > MAX_DATA_CENTER_NUM || dataCenterId < 0) {
-      throw new IllegalArgumentException("dataCenterId can't be greater than MAX_DATA_CENTER_NUM or less than 0");
-    }
-    if (machineId > MAX_MACHINE_NUM || machineId < 0) {
-      throw new IllegalArgumentException("machineId can't be greater than MAX_MACHINE_NUM or less than 0");
-    }
-    this.dataCenterId = dataCenterId;
-    this.machineId = machineId;
-  }
-
-  /**
-   * 产生下一个ID
-   *
-   * @return
-   */
-  public synchronized long nextId() {
-    long currStamp = getNewStamp();
-    if (currStamp < lastStamp) {
-      throw new RuntimeException("Clock moved backwards.  Refusing to generate id");
+    public SnowFlake(long dataCenterId, long machineId) {
+        if (dataCenterId > MAX_DATA_CENTER_NUM || dataCenterId < 0) {
+            throw new IllegalArgumentException("dataCenterId can't be greater than MAX_DATA_CENTER_NUM or less than 0");
+        }
+        if (machineId > MAX_MACHINE_NUM || machineId < 0) {
+            throw new IllegalArgumentException("machineId can't be greater than MAX_MACHINE_NUM or less than 0");
+        }
+        this.dataCenterId = dataCenterId;
+        this.machineId = machineId;
     }
 
-    if (currStamp == lastStamp) {
-      // 相同毫秒内，序列号递增
-      sequence = (sequence + 1) & MAX_SEQUENCE_NUM;
-      // 同一毫秒内，序列号已经达到最大，切到下一毫秒
-      if (sequence == 0L) {
-        currStamp = getNextMills();
-      }
-    } else {
-      // 不同毫秒内，序列号置为0
-      sequence = 0L;
+    /**
+     * 产生下一个ID
+     *
+     * @return
+     */
+    public synchronized long nextId() {
+        long currStamp = getNewStamp();
+        if (currStamp < lastStamp) {
+            throw new RuntimeException("Clock moved backwards.  Refusing to generate id");
+        }
+
+        if (currStamp == lastStamp) {
+            // 相同毫秒内，序列号递增
+            sequence = (sequence + 1) & MAX_SEQUENCE_NUM;
+            // 同一毫秒内，序列号已经达到最大，切到下一毫秒
+            if (sequence == 0L) {
+                currStamp = getNextMills();
+            }
+        } else {
+            // 不同毫秒内，序列号置为0
+            sequence = 0L;
+        }
+
+        lastStamp = currStamp;
+
+        return (lastStamp - START_STAMP) << TIMESTAMP_LEFT
+                | dataCenterId << DATA_CENTER_LEFT
+                | machineId << MACHINE_LEFT
+                | sequence;
     }
 
-    lastStamp = currStamp;
 
-    return (lastStamp - START_STAMP) << TIMESTAMP_LEFT
-        | dataCenterId << DATA_CENTER_LEFT
-        | machineId << MACHINE_LEFT
-        | sequence;
-  }
-
-  /**
-   * 反解出id中的4个部分值
-   *
-   * @param id
-   * @return
-   */
-  public static String parseId(long id) {
-    long sequenceNum = (id << (64 - SEQUENCE_BIT)) >> (64 - SEQUENCE_BIT);
-    long machineNum = (id << (64 - MACHINE_BIT - SEQUENCE_BIT)) >> (64 - MACHINE_BIT);
-    long dataCenterNum = (id << (64 - DATA_CENTER_BIT - MACHINE_BIT - SEQUENCE_BIT)) >> (64 - DATA_CENTER_BIT);
-    long timeStamp = id >> (64 - TIME_STAMP_BIT);
-    return String.format("timeStamp:%s, dataCenter:%s, machineNum:%s, sequence:%s",
-        timeStamp, dataCenterNum, machineNum, sequenceNum);
-  }
-
-  private long getNextMills() {
-    long mill = getNewStamp();
-    while (mill <= lastStamp) {
-      mill = getNewStamp();
+    private long getNextMills() {
+        long mill = getNewStamp();
+        while (mill <= lastStamp) {
+            mill = getNewStamp();
+        }
+        return mill;
     }
-    return mill;
-  }
 
-  private long getNewStamp() {
-    return System.currentTimeMillis();
-  }
+    private long getNewStamp() {
+        return System.currentTimeMillis();
+    }
+
+    /**
+     * 反解出id中的4个部分值
+     *
+     * @param id
+     * @return
+     */
+    public static String parseId(long id) {
+        long sequenceNum = (id << (64 - SEQUENCE_BIT)) >> (64 - SEQUENCE_BIT);
+        long machineNum = (id << (64 - MACHINE_BIT - SEQUENCE_BIT)) >> (64 - MACHINE_BIT);
+        long dataCenterNum = (id << (64 - DATA_CENTER_BIT - MACHINE_BIT - SEQUENCE_BIT)) >> (64 - DATA_CENTER_BIT);
+        long timeStampGap = id >> (64 - TIME_STAMP_BIT);
+
+        long timeStamp = timeStampGap + START_STAMP;
+        String time = new DateTime(timeStamp).toString("yyyy-MM-dd HH:mm:ss");
+
+        return String.format("time:%s, dataCenter:%s, machineNum:%s, sequence:%s",
+                time, dataCenterNum, machineNum, sequenceNum);
+    }
 }

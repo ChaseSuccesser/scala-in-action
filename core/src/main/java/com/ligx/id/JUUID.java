@@ -5,7 +5,7 @@ import java.net.UnknownHostException;
 import java.util.UUID;
 
 /**
- * Created by Administrator on 2016/11/10.
+ * Created by ligongxing on 2016/11/10.
  */
 public class JUUID {
 

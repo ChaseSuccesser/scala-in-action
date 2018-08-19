@@ -17,7 +17,7 @@ import com.ligx.restapi.exception.{ParamError, RestException}
 import scala.collection.mutable
 
 /**
-  * Created by Administrator on 2016/8/4.
+  * Created by ligongxing on 2016/8/4.
   */
 case class Person(name: String, age: Int)
 

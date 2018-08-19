@@ -13,7 +13,7 @@ public class SnowFlakeTest {
   public void nextIdTest() {
     SnowFlake snowFlake = new SnowFlake(2, 3);
     Set<Long> set = new HashSet<>();
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 10000; i++) {
       long id = snowFlake.nextId();
       System.out.println(id + ",,,,," + SnowFlake.parseId(id));
       set.add(id);
