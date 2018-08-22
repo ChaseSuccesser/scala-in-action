@@ -10,7 +10,6 @@ import spray.json._
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model.{HttpResponse, MessageEntity, StatusCode}
 import akka.http.scaladsl.server.ExceptionHandler
-import com.ligx.KafkaMonitor.KafkaStateMonitor
 import com.ligx.restapi.commons.CommonResult
 import com.ligx.restapi.exception.{ParamError, RestException}
 
@@ -77,44 +76,6 @@ object Server extends App{
       } ~
       (path("test_exception") & get) {
         failWith(new RestException(ParamError))
-      }
-    } ~
-    pathPrefix("kafka") {
-      (path("get_broker.json") & get) {
-        val monitor = new KafkaStateMonitor()
-        val brokersInfo = monitor.getBrokerInfoForApi()
-        monitor.close()
-        complete(brokersInfo)
-      } ~
-      (path("get_topic.json") & get) {
-        val monitor = new KafkaStateMonitor()
-        val topicsInfo = monitor.getTopicInfoForApi()
-        monitor.close()
-        complete(topicsInfo)
-      } ~
-      (path("get_topic_partition.json") & get) {
-        val monitor = new KafkaStateMonitor()
-        val topicPartitionsInfo = monitor.getTopicPartitionInfoForApi()
-        monitor.close()
-        complete(topicPartitionsInfo)
-      } ~
-      (path("get_topic_partition_owner.json") & get) {
-        val monitor = new KafkaStateMonitor()
-        val topicPartitionOwner = monitor.getTopicPartitionOwnerForApi()
-        monitor.close()
-        complete(topicPartitionOwner)
-      } ~
-      (path("get_group_consumer.json") & get) {
-        val monitor = new KafkaStateMonitor()
-        val groupConsumersInfo = monitor.getGroupConsumerInfoForApi()
-        monitor.close()
-        complete(groupConsumersInfo)
-      } ~
-      (path("get_consumer_offset.json") & get) {
-        val monitor = new KafkaStateMonitor()
-        val consumerOffsetInfo = monitor.getConsumerOffsetInfoForApi()
-        monitor.close()
-        complete(consumerOffsetInfo.toJson)
       }
     }
 
