@@ -125,5 +125,6 @@ public class IdGenerator {
         String time = new DateTime(timeStamp).toString("yyyy-MM-dd HH:mm:ss:SSS");
 
         return String.format("time:%s, nodeNum:%s, sequence:%s", time, nodeNum, sequenceNum);
+
     }
 }
