@@ -88,7 +88,7 @@ class AvMovieCrawlerActor extends Actor {
     case categoryUrl: String =>
       println(s"categoryUrl=$categoryUrl")
       val movies = loadSpecifiedCategoryAllPages(categoryUrl)
-      val future = MovieStorage.saveMovie(movies)
+      val future = AvStorage.saveMovie(movies)
       val result = Await.result(future, Duration(2, TimeUnit.SECONDS))
       println(s"categoryUrl=$categoryUrl, movies size=${movies.size}, insert count=$result")
     case _ => println("unknown message!")
