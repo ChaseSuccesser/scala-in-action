@@ -15,28 +15,8 @@ object AvStorage {
 
   implicit val ec = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(10))
 
-//  def saveAvGirlList(avGirlList: List[AvGirl]): Future[Array[Int]] = {
-//    if (avGirlList != null && avGirlList.nonEmpty) {
-//      val sqlList = avGirlList map (avGirl => {
-//        val picUrls = Option(avGirl.picUrlList).getOrElse(List()).mkString(",")
-//        s"""INSERT INTO av_girl(girl_name, fanhao, favorite_count, date, pic_url) VALUES('${avGirl.girlName}', '${avGirl.fanhao}', '${avGirl.favoriteCount}', '${avGirl.date}', '$picUrls');"""
-//      })
-//
-//      try {
-//        DbReadWriteTemplate.batchInsert(sqlList)
-//      } catch {
-//        case e: Exception =>
-//          e.printStackTrace()
-//          sqlList.foreach(println)
-//          Future(Array(0))
-//      }
-//    } else {
-//      Future(Array(0))
-//    }
-//  }
-
   def saveAvGirls(avGirlList: List[AvGirl]): Future[Int] = {
-    if(avGirlList != null && avGirlList.size > 0) {
+    if(avGirlList != null && avGirlList.nonEmpty) {
       val futures = avGirlList map (avGirl => {
         val picUrls = Option(avGirl.picUrlList).getOrElse(List()).mkString(",")
         val sql = s"""INSERT INTO av_girl(girl_name, fanhao, favorite_count, date, pic_url) VALUES('${avGirl.girlName}', '${avGirl.fanhao}', '${avGirl.favoriteCount}', '${avGirl.date}', '$picUrls');"""
@@ -51,6 +31,20 @@ object AvStorage {
       Future(0)
     }
   }
+
+  def queryAvGirls(): Future[Seq[AvGirl]] = {
+    implicit val avMovieResult: GetResult[AvGirl] =
+      GetResult(r => AvGirl(r.nextString(), r.nextString(), r.nextString(), "", r.nextString().split(",").toList))
+
+    DbReadWriteTemplate.select(
+      s"""
+         SELECT girl_name, fanhao, favorite_count, pic_url
+         FROM av_girl
+         ORDER BY favorite_count DESC;
+       """)
+  }
+
+  // ----------------------------------------------------------------
 
   def saveMovies(movies: List[AvMovie]): Future[Array[Int]] = {
     if (movies != null && movies.nonEmpty) {

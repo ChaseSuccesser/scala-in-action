@@ -7,18 +7,30 @@ import better.files.File
 object FileUtil {
 
   def writeLines(filePath: String, lines: List[String], charSet: Charset = Charset.forName("UTF-8")): Unit = {
-    val file = File(filePath).createIfNotExists()
-    file.appendLines(lines: _*)(charSet)
+    try {
+      val file = File(filePath).createIfNotExists()
+      file.appendLines(lines: _*)(charSet)
+    } catch {
+      case e: Exception => e.printStackTrace()
+    }
   }
 
   def writeString(filePath: String, content: String, charSet: Charset = Charset.forName("UTF-8")): Unit = {
-    val file = File(filePath).createIfNotExists()
-    file.write(content)(charset = charSet)
+    try {
+      val file = File(filePath).createIfNotExists()
+      file.write(content)(charset = charSet)
+    } catch {
+      case e: Exception => e.printStackTrace()
+    }
   }
 
   def writeByteArray(filePath: String, bytes: Array[Byte]): Unit = {
-    val file = File(filePath).createIfNotExists()
-    file.writeByteArray(bytes)
+    try {
+      val file = File(filePath).createIfNotExists()
+      file.writeByteArray(bytes)
+    } catch {
+      case e: Exception => e.printStackTrace()
+    }
   }
 
   def readLines(filePath: String, charSet: Charset = Charset.forName("UTF-8")): Option[Traversable[String]] = {
