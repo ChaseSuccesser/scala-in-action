@@ -14,6 +14,6 @@ class AvGirlDownloaderSpec extends FlatSpec with Matchers {
     val avGirl = AvGirl("test", "", "", "", List("http://www.tom97.com/pic/uploadimg/2017-6/201767942236423.jpg"))
     AvGirlDownloader.downloadAvGirlImage(avGirl)
 
-    Thread.sleep(20000)
+    Thread.sleep(2000)
   }
 }

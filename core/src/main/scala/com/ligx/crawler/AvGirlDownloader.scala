@@ -41,13 +41,13 @@ object AvGirlDownloader {
     val picUrls = avGirl.picUrlList
 
     picUrls.zipWithIndex.foreach(tuple => {
-      val picUrl = tuple._1
+      val picUrl = tuple._1.replace(".com", ".net")
       val index = tuple._2
       HttpClient.get(picUrl)
         .run()
         .map {
           case res@SimpleHttpResponse(_, _, _, _, _) =>
-            if(res.statusCode.isSuccess()) {
+            if (res.statusCode.isSuccess()) {
               val gifFilePath = localPath + s"$girlName-$index" + ".jpg"
               FileUtil.writeByteArray(gifFilePath, res.bodyAsByteArray)
             } else {
